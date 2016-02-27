@@ -7,37 +7,57 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 class NativeLoader {
-    public static void loadLibrary(String library) {
-    	String osArch = System.getProperty("os.arch");
+	
+	static String prefix = "CLPExtractedLib";
+	static String library = "clp-1.16.10";
+	static String pathSep = System.getProperty("file.separator");
+
+	static void load() {
+		
+		File tempDir = createTempDir(prefix);
+		String osArch = System.getProperty("os.arch");
         String osName = System.getProperty("os.name").toLowerCase();
-        String name;
-        String path;
         if (osName.startsWith("mac")) {
-        	name = "lib" + library + ".dylib";
-            path = "darwin/";
+        	String path = library+pathSep+"darwin"+pathSep;
+        	loadLibrary(tempDir,path,"libClp.dylib");
         } else if (osName.startsWith("win")) {
-        	name = library + ".dll";
-            path = "win64/";
+        	if (osArch.contains("64")) {
+        		String path = library+pathSep+"win64"+pathSep;
+            	String[] libs = {"libgcc_s_seh_64-1.dll","libstdc++_64-6.dll","libCoinUtils.dll","Clp.dll",};
+            	for (String lib : libs) 
+            		loadLibrary(tempDir,path,lib);
+        	}
+            else {
+                throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " notsupported");
+            }
         } else if (osName.startsWith("linux")) {
-        	name = "lib" + library + ".so";
-            path = "linux64/";
+        	String path = library+pathSep+"linux64"+pathSep;
+        	loadLibrary(tempDir,path,"libClp.so");
         } else {
             throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " not supported");
         }
+	}
+	
+	public static File createTempDir(String prefix) {
+        String tmpDirName = System.getProperty("java.io.tmpdir");
+        if (tmpDirName.endsWith(pathSep))
+        	tmpDirName += prefix+System.nanoTime()+pathSep;
+        else
+        	tmpDirName += pathSep+prefix+System.nanoTime()+pathSep;
+        File dir = new File(tmpDirName);
+        dir.mkdir();
+        dir.deleteOnExit();
+        return dir;
+	}
+	
+    public static void loadLibrary(File dir, String path, String name) {
         InputStream in = null;
         OutputStream out = null;
         try {
-            in = NativeLoader.class.getClassLoader().getResourceAsStream("lib/" + path+name);
-            String pathSep = System.getProperty("file.separator");
-            String tmpDirName = System.getProperty("java.io.tmpdir");
-            if (tmpDirName.endsWith(pathSep))
-            	tmpDirName += "CLPExtractedLib"+System.nanoTime()+pathSep;
-            else
-            	tmpDirName += pathSep+"CLPExtractedLib"+System.nanoTime()+pathSep;
-            File dir = new File(tmpDirName);
-            dir.mkdir();
-            dir.deleteOnExit();
-            File file = new File(tmpDirName, name);
+            System.setProperty("java.library.path", System.getProperty("java.library.path")+":"+dir.getAbsolutePath());
+        	in = NativeLoader.class.getClassLoader().getResourceAsStream(path+name);
+            File file = new File(dir, name);
+            System.err.println(dir.getAbsolutePath()+" "+path+" "+name);
             file.deleteOnExit();
             file.createNewFile();
             out = new FileOutputStream(file);
@@ -46,7 +66,6 @@ class NativeLoader {
             while ((cnt = in.read(buf)) >= 1) {
                 out.write(buf, 0, cnt);
             }
-            System.setProperty("java.library.path", System.getProperty("java.library.path")+":"+tmpDirName);
         } catch (IOException e) {
         	e.printStackTrace();
         } finally {

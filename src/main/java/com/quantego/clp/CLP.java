@@ -15,7 +15,7 @@ import com.quantego.clp.CLPNative.*;
 public class CLP {
 	
 	static {
-		NativeLoader.loadLibrary("Clp.1.13.10");
+		NativeLoader.load();
 	}
 	
 	Pointer<CLPSimplex> _model;
