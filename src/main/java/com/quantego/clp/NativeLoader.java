@@ -16,11 +16,11 @@ class NativeLoader {
         	name = "lib" + library + ".dylib";
             path = "darwin/";
         } else if (osName.startsWith("win")) {
-        	name = "lib" + library + ".dll";
-            path = "win/";
+        	name = library + ".dll";
+            path = "win64/";
         } else if (osName.startsWith("linux")) {
         	name = "lib" + library + ".so";
-            path = "linux/";
+            path = "linux64/";
         } else {
             throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " not supported");
         }
