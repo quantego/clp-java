@@ -20,12 +20,14 @@ class NativeLoader {
         if (osName.startsWith("mac")) {
         	String path = library+pathSep+"darwin"+pathSep;
         	loadLibrary(tempDir,path,"libClp.dylib");
+            System.setProperty("java.library.path", System.getProperty("java.library.path")+":"+tempDir.getAbsolutePath());
         } else if (osName.startsWith("win")) {
         	if (osArch.contains("64")) {
         		String path = library+pathSep+"win64"+pathSep;
-            	String[] libs = {"libgcc_s_seh_64-1.dll","libstdc++_64-6.dll","libCoinUtils.dll","Clp.dll",};
+            	String[] libs = {"libgcc_s_seh_64-1.dll","libstdc++_64-6.dll","libCoinUtils-3.dll","Clp.dll",};
             	for (String lib : libs) 
             		loadLibrary(tempDir,path,lib);
+                System.setProperty("java.library.path", System.getProperty("java.library.path")+";"+tempDir.getAbsolutePath());
         	}
             else {
                 throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " notsupported");
@@ -33,6 +35,8 @@ class NativeLoader {
         } else if (osName.startsWith("linux")) {
         	String path = library+pathSep+"linux64"+pathSep;
         	loadLibrary(tempDir,path,"libClp.so");
+            System.setProperty("java.library.path", System.getProperty("java.library.path")+":"+tempDir.getAbsolutePath());
+
         } else {
             throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " not supported");
         }
@@ -54,10 +58,8 @@ class NativeLoader {
         InputStream in = null;
         OutputStream out = null;
         try {
-            System.setProperty("java.library.path", System.getProperty("java.library.path")+":"+dir.getAbsolutePath());
         	in = NativeLoader.class.getClassLoader().getResourceAsStream(path+name);
             File file = new File(dir, name);
-            System.err.println(dir.getAbsolutePath()+" "+path+" "+name);
             file.deleteOnExit();
             file.createNewFile();
             out = new FileOutputStream(file);
