@@ -18,12 +18,12 @@ class NativeLoader {
 		String osArch = System.getProperty("os.arch");
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.startsWith("mac")) {
-        	String path = library+pathSep+"darwin"+pathSep;
+        	String path = library+"/darwin/";
         	loadLibrary(tempDir,path,"libClp.dylib");
             System.setProperty("java.library.path", System.getProperty("java.library.path")+":"+tempDir.getAbsolutePath());
         } else if (osName.startsWith("win")) {
         	if (osArch.contains("64")) {
-        		String path = library+pathSep+"win64"+pathSep;
+        		String path = library+"/win64/";
             	String[] libs = {"libgcc_s_seh_64-1.dll","libstdc++_64-6.dll","libCoinUtils-3.dll","Clp.dll",};
             	for (String lib : libs) 
             		loadLibrary(tempDir,path,lib);
@@ -33,7 +33,7 @@ class NativeLoader {
                 throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " notsupported");
             }
         } else if (osName.startsWith("linux")) {
-        	String path = library+pathSep+"linux64"+pathSep;
+        	String path = library+"/linux64/";
         	loadLibrary(tempDir,path,"libClp.so");
             System.setProperty("java.library.path", System.getProperty("java.library.path")+":"+tempDir.getAbsolutePath());
 
