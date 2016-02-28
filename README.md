@@ -33,7 +33,7 @@ Once a model is build it only lives in native memory, with the exception of refe
 
 #### Deployment via Maven
 
-I just started working with Maven, so this is still on the todo.
+This is still on the todo.
 
 #### All-in-one jar file
 
