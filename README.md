@@ -48,9 +48,8 @@ TODO
 
 #### All-in-one jar file
 
-[Download here](https://github.com/loehndorf/clp-java/target)
+[Download here](https://github.com/loehndorf/clp-java/target/)
 
-The Java jar file contains the native libs for the most important host systems (Mac, Win 64, Linux 64), so there won't be ÙnsatisfiedLinkeError`messages and there is no messing around with setting build paths. A copy of the native libs will be copied to a temporary directory runtime. Simply import the jar.
+The Java jar file contains the native libs for the most important host systems (Mac, Win 64, Linux 64), so there won't be `UnsatisfiedLinkeError`messages and there is no messing around with setting build paths. A copy of the native libs will be copied to a temporary directory runtime. Simply import the jar.
 
-## Changelog
 
