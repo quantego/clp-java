@@ -41,10 +41,7 @@ Once a model is build it only lives in native memory. To update model coefficien
 
 #### Deployment via Maven
 
-Simply add the following dependency to your `pom.xml`
-```
-TODO
-```
+This is still on my todo. 
 
 #### All-in-one jar file
 
