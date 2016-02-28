@@ -341,6 +341,15 @@ public class CLP {
 		_colBuffer.addCol();
 		return new CLPVariable(this, _numCols++);
 	}
+	
+	/**
+	 * Create a set of variables.
+	 * @param size
+	 * @return
+	 */
+	public CLPVariableSet addVariables(int size) {
+		return new CLPVariableSet(this,size);
+	}
 
 	/**
 	 * Set the objective coefficient of the given variable.
