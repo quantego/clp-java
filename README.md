@@ -1,4 +1,4 @@
-# Java Interface for the CLP Linear Solver
+# CLP for Java
 
 Java interface for the CLP linear solver, optimized towards fast model building and fast resolves. The interface is a vital part of the [QUASAR stochastic optimizer](https://github.com/quantego/quasar) and serves as the default linear solver. QUASAR typically solves millions of small linear programs and relies on a fast and light-weight interface.
 
