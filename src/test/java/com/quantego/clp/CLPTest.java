@@ -2,12 +2,43 @@ package com.quantego.clp;
 
 import static org.junit.Assert.*;
 
+import java.util.Random;
+
 import org.junit.Test;
 
+import com.quantego.clp.CLP.ALGORITHM;
+
 public class CLPTest {
+	
+	@Test
+	public void testBuffers() {
+		CLP model = new CLP().presolve(false).maxIterations(1);
+		int size1 = 100;
+		int size2 = 10000;
+		Random gen = new Random(11);
+		CLPVariable[][] massTransport = new CLPVariable[size1][size2];
+		for (int i=0; i<size1; i++) {
+			double rnd = gen.nextGaussian();
+			for (int j=0; j<size2; j++) 
+				massTransport[i][j] = model.addVariable()
+				.ub(1./size2)
+				.obj(Math.pow(gen.nextGaussian()-rnd,2)); //L2-Wasserstein distance
+			
+		}
+		for (int i=0; i<size1; i++) 
+			model.createExpression().add(massTransport[i]).eq(1./size1);
+		for (int j=0; j<size2; j++) {
+			CLPExpression e = model.createExpression();
+			for (int i=0; i<size1; i++) 
+				e.add(massTransport[i][j]);
+			e.eq(1./size2);
+		}
+		CLP.STATUS ret = model.minimize();
+		assertTrue(ret==CLP.STATUS.LIMIT);
+	}
 
 	@Test
-	public void testCLP() {
+	public void testToString() {
 		CLP solver = new com.quantego.clp.CLP().buffer(2).maximization();
 	    CLPVariable x0 = solver.addVariable().ub(1.0);
 	    CLPVariable x1 = solver.addVariable().ub(0.3).obj(2.655523).name("var_1");

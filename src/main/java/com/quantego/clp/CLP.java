@@ -21,8 +21,6 @@ public class CLP {
 	Pointer<CLPSimplex> _model;
 	Pointer<CLPSolve> _solve;
 	Pointer<Double> _elements;
-	int[] _starts;
-	int[] _index;
 	Pointer<Double> _rowLower;
 	Pointer<Double> _rowUpper;
 	Pointer<Double> _obj;
@@ -30,6 +28,8 @@ public class CLP {
 	Pointer<Double> _colUpper;
 	Pointer<Double> _primal;
 	Pointer<Double> _dual;
+	int[] _starts;
+	int[] _index;
 	
 	Map<Integer,String> _varNames = new HashMap<>();
 	Map<Integer,String> _ctrNames = new HashMap<>();
@@ -39,7 +39,7 @@ public class CLP {
 	double _objValue = Double.NaN;
 	boolean _maximize;
 	
-	int _bufferSize = 10000;
+	int _bufferSize = 100000;
 	double _smallestElement = 1.e-20;
 	int _numNativeCols;
 	int _numNativeRows;
@@ -77,8 +77,6 @@ public class CLP {
 				Pointer.pointerToDoubles(_rowBuffer.elements()));
 		_numElements += _rowBuffer._elements.size();
 		_elements = CLPNative.clpGetElements(_model);
-		_index = CLPNative.clpGetIndices(_model).getInts(_numElements);
-		_starts = CLPNative.clpGetVectorStarts(_model).getInts(_numCols+1);
 		_rowLower = CLPNative.clpGetRowLower(_model);
 		for (int i=0; i<_rowBuffer.size(); i++) {
 			if (_rowBuffer._lower.get(i)==Double.NEGATIVE_INFINITY)
@@ -92,6 +90,21 @@ public class CLP {
 		_rowBuffer = new RowBuffer();
 		_dual = CLPNative.clpDualRowSolution(_model);
 		_numNativeRows = _numRows;
+		_index = null;
+		_starts = null;
+	}
+	
+	private int[] getIndex() {
+		if (_index==null)
+			_index = CLPNative.clpGetIndices(_model).getInts(_numElements);
+		return _index;
+		
+	}
+	
+	private int[] getStarts() {
+		if (_starts==null)
+			_starts = CLPNative.clpGetVectorStarts(_model).getInts(_numCols+1);
+		return _starts;
 	}
 	
 	private void addCols() {
@@ -214,9 +227,11 @@ public class CLP {
 	 */
 	public void setConstraintCoefficient(CLPConstraint constraint, CLPVariable variable, Double value) {
 		if (constraint._index < _numNativeRows) {
-			int pos = _starts[variable._index];
-			int end = pos + _starts[variable._index+1];
-			while(_index[pos++]!=constraint._index) {
+			int[] starts = getStarts();
+			int[] index = getIndex();
+			int pos = starts[variable._index];
+			int end = pos + starts[variable._index+1];
+			while(index[pos++]!=constraint._index) {
 				if (pos>=end)
 					throw new IllegalStateException(String.format("Constraint %s does not contain variable %s. Coefficient not set.",constraint.toString(),variable.toString()));
 			}
@@ -447,8 +462,8 @@ public class CLP {
 				Pointer.pointerToDoubles(_colLower.getDoubles(_numCols)), 
 				Pointer.pointerToDoubles(_colUpper.getDoubles(_numCols)), 
 				Pointer.pointerToDoubles(_obj.getDoubles(_numCols)), 
-				Pointer.pointerToInts(_starts), 
-				Pointer.pointerToInts(_index), 
+				Pointer.pointerToInts(getStarts()), 
+				Pointer.pointerToInts(getIndex()), 
 				Pointer.pointerToDoubles(_elements.getDoubles(_numElements)));
 		Pointer<Double> rowLower = _rowLower;
 		_rowLower = CLPNative.clpGetRowLower(newModel);
@@ -468,8 +483,8 @@ public class CLP {
 			_colUpper.set(i,colUpper.get(i));
 		CLPNative.clpSetOptimizationDirection(newModel, _maximize?-1:1);
 		_elements = CLPNative.clpGetElements(newModel);
-		_index = CLPNative.clpGetIndices(newModel).getInts(_numElements);
-		_starts = CLPNative.clpGetVectorStarts(newModel).getInts(_numCols+1);
+		_index = null;
+		_starts = null;
 		_dual = CLPNative.clpDualRowSolution(newModel);
 		_obj = CLPNative.clpGetObjCoefficients(newModel);
 		_primal = CLPNative.clpPrimalColumnSolution(newModel);
@@ -815,11 +830,13 @@ public class CLP {
 		List<StringBuilder> constraintStrings = new ArrayList<>(_numRows);
 		for (int row=0; row<_numRows; row++)
 			constraintStrings.add(new StringBuilder().append(getConstraintName(row)).append(":"));
+		int[] starts = getStarts();
+		int[] index = getIndex();
 		for (int col=0; col<_numCols; col++) {
-			int begin = _starts[col];
-			int end = _starts[col+1];
+			int begin = starts[col];
+			int end = starts[col+1];
 			for (int j=begin; j<end; j++) {
-				int row = _index[j];
+				int row = index[j];
 				double element = _elements.get(j);
 				if (element != 0)
 					constraintStrings.get(row).append(termToString(element,getVariableName(col)));
