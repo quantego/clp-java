@@ -44,39 +44,30 @@
 <h4>
 <a id="compact-model-creation-using-builders" class="anchor" href="#compact-model-creation-using-builders" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compact model creation using builders</h4>
 
+<p>Variables, constraints, and linear expressions are available as Java objects to make model building as easy as possible.</p>
+
 <p>Decision variables as well as their bounds and objective coefficients can be created in a single line. For example, <img src="https://latex.codecogs.com/gif.latex?x%20%5Cin%20%5B-3%2C3%5D" alt="x \in [-3,3]"> and <img src="https://latex.codecogs.com/gif.latex?y%20%5Cin%20%5Cmathbb%7BR%7D" alt="y \in \mathbb{R}">, would become</p>
 
 <pre><code>CLPVariable x = model.addVariable().lb(-3).ub(3);
 CLPVariable y = model.addVariable().free();
 </code></pre>
 
-<p>We can alos write constraints as a series of <em>add</em> statements as opposed to using getters and setters. For example, <img src="https://latex.codecogs.com/gif.latex?3x&amp;plus;4y%20%5Cleq%2010" alt="3x + 4y \leq 10"> can be expressed as</p>
+<p>Since there is no operator overloading in Java, algebraic formulations are not possible. To avoid excessive use of setters, constraints can be built by using a series of <em>add</em> statements. For example, <img src="https://latex.codecogs.com/gif.latex?3x&amp;plus;4y%20%5Cleq%2010" alt="3x + 4y \leq 10"> can be expressed as</p>
 
 <pre><code>model.createExpression().add(3,x).add(4,y).leq(10);
 </code></pre>
 
-<p>Of course, this also works for an array of decision variables. For example</p>
-
-<p><img src="https://latex.codecogs.com/gif.latex?%5Csum_%7B%7Di%5En%202x_i%20%3D%200" alt="\sum_{i=1}}^n 2x_i = 0"></p>
-
-<p>becomes</p>
-
-<pre><code>DecisionVariable[] X = model.addVariables().ub(10).build();
-Expression e = model.createExpression();
-e.add(2,X).eq(0);
-</code></pre>
-
-<p>In this way, models become more compact and readible.</p>
+<p>The <em>add</em> statements also accepts vectors of variables and coefficients.</p>
 
 <h4>
 <a id="fast-model-building" class="anchor" href="#fast-model-building" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fast model building</h4>
 
-<p>Chunks of a model are buffered in heap for model building before being sent to the native lib. The size of the buffer can be set by the user. This helps to formulate models in a  row-by-row fashion, without bothering about possible performance bottlenecks through slow JNI access. Models with millions of constraints can be generated rather quickly.</p>
+<p>Chunks of a model are buffered in heap for model building before being sent to the native lib. The size of the buffer can be set by the user. Models can be formulated in a row-by-row fashion, without bothering about possible performance bottlenecks. Models with millions of constraints can be generated quickly.</p>
 
 <h4>
 <a id="direct-memory-access" class="anchor" href="#direct-memory-access" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Direct memory access</h4>
 
-<p>Once a model is build it only lives in native memory. To update model coefficients, the model is accessed directly in native memory via direct byte buffers that are provided by the <a href="BridJ">https://github.com/nativelibs4java/BridJ</a> native interface. When the model gets gc'ed, native memory will be released automatically.</p>
+<p>Once a model is build it only lives in native memory, with the exception of referenced objects of variables and constraints which remein in heap. To update model coefficients, the model is accessed directly in native memory via direct byte buffers that are provided by the <a href="BridJ">https://github.com/nativelibs4java/BridJ</a> native interface. When the model gets gc'ed, native memory will be released automatically.</p>
 
 <h2>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
@@ -84,7 +75,7 @@ e.add(2,X).eq(0);
 <h4>
 <a id="deployment-via-maven" class="anchor" href="#deployment-via-maven" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Deployment via Maven</h4>
 
-<p>This is still on my todo. </p>
+<p>This is still on the todo.</p>
 
 <h4>
 <a id="all-in-one-jar-file" class="anchor" href="#all-in-one-jar-file" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>All-in-one jar file</h4>
