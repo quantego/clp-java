@@ -35,6 +35,14 @@ public class CLPObjective {
 		return this;
 	}
 	
+	/**
+	 * 
+	 * @return the objective value.
+	 */
+	public double getValue() {
+		return _solver.getObjectiveValue();
+	}
+	
 	
 	
 }

@@ -6,13 +6,12 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.quantego.clp.CLP.ALGORITHM;
 
 public class CLPTest {
 	
 	@Test
 	public void testBuffers() {
-		CLP model = new CLP().presolve(false).maxIterations(1);
+		CLP model = new CLP().buffer(1000).presolve(false).maxIterations(1);
 		int size1 = 100;
 		int size2 = 10000;
 		Random gen = new Random(11);
