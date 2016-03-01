@@ -31,10 +31,6 @@ Once a model is build it only lives in native memory, with the exception of refe
 
 ## Installation
 
-#### Deployment via Maven
-
-This is still on the todo.
-
 #### All-in-one jar file
 Download the [latest build](https://github.com/loehndorf/clp-java/releases/latest) of the jar from the release page.
 
