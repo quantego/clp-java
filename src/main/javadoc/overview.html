@@ -1,17 +1,17 @@
 <HTML>
 <BODY>
-<h2>clp-java</h2>
+<h1>Overview</h1>
+<h2>Installation</h2>
+<p>Download the latest <a href="https://github.com/loehndorf/clp-java/releases/latest">jar file</a> and add it to your build path, or clone the <a href="https://github.com/loehndorf/clp-java">source</a> into a local git repository. </p>
+<h2>Usage</h2>
 <p>
-<a href="http://https://github.com/loehndorf/clp-java/">clp-java</a>: Java-style linear programming with CLP.
-</p>
-<p>
-To build a linear programming model, create a new {@link com.quantego.clp.CLP} instance. Instances of all other classes are created from there. Builders are provided to get as close as possible to algebraic modeling.
+To build a new linear programming model, create a {@link com.quantego.clp.CLP} instance. Instances of all other classes are created from there. Builders are provided to get as close as possible to algebraic modeling.
 </p>
 <p>
 To get started quickly, check out the following functions:
 <ul>
 <li>{@link com.quantego.clp.CLP#addVariable()} adds a {@link com.quantego.clp.CLPVariable} to the model.</li>
-<li>{@link com.quantego.clp.CLPVariable} serves as a builder for variables. For example {@link com.quantego.clp.CLPVariable.ub(double)} adds the variable upper bound, or {@link com.quantego.clp.CLPVariable.obj(double)} sets the objective coefficient.
+<li>{@link com.quantego.clp.CLPVariable} serves as a builder for variables. For example {@link com.quantego.clp.CLPVariable#ub(double)} adds the variable upper bound, or {@link com.quantego.clp.CLPVariable#obj(double)} sets the objective coefficient.
 <li>{@link com.quantego.clp.CLP#createExpression()} provides a builder to create linear expressions. Simply call {@link com.quantego.clp.CLPExpression#leq(double)} to add a {@link com.quantego.clp.CLPExpression} as less-or-equal {@link com.quantego.clp.CLPConstraint}.</li>
 </ul>
 </p>
