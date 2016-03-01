@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Clp-java : Java interface for the Coin-OR CLP linear solver">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Clp-java</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/loehndorf/clp-java">View on GitHub</a>
+
+          <h1 id="project_title">Clp-java</h1>
+          <h2 id="project_tagline">Java interface for the Coin-OR CLP linear solver</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/loehndorf/clp-java/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/loehndorf/clp-java/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="clp-for-java" class="anchor" href="#clp-for-java" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CLP for Java</h1>
+
+<p>Java interface for the CLP linear solver, optimized towards fast model building and fast resolves. The interface is a vital part of the <a href="https://github.com/quantego/quasar">QUASAR stochastic optimizer</a> and serves as the default linear solver. QUASAR typically solves millions of small linear programs and relies on a fast and light-weight interface.</p>
+
+<h2>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>The interface provides a number of useful features for Java programmers who want to build either large models or apply decomposition strategies that require a lot of resolves. The interface has undergone several rounds of testing and profiling outside of unit tests.</p>
+
+<h4>
+<a id="compact-model-creation-using-builders" class="anchor" href="#compact-model-creation-using-builders" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compact model creation using builders</h4>
+
+<p>Variables, constraints, and linear expressions are available as Java objects to make model building as easy as possible.</p>
+
+<p>Decision variables as well as their bounds and objective coefficients can be created in a single line. For example, <img src="https://latex.codecogs.com/gif.latex?x%20%5Cin%20%5B-3%2C3%5D" alt="x \in [-3,3]"> and <img src="https://latex.codecogs.com/gif.latex?y%20%5Cin%20%5Cmathbb%7BR%7D" alt="y \in \mathbb{R}">, would become</p>
+
+<pre><code>CLPVariable x = model.addVariable().lb(-3).ub(3);
+CLPVariable y = model.addVariable().free();
+</code></pre>
+
+<p>Since there is no operator overloading in Java, algebraic formulations are not possible. To avoid excessive use of setters, constraints can be built by using a series of <em>add</em> statements. For example, <img src="https://latex.codecogs.com/gif.latex?3x&amp;plus;4y%20%5Cleq%2010" alt="3x + 4y \leq 10"> can be expressed as</p>
+
+<pre><code>model.createExpression().add(3,x).add(4,y).leq(10);
+</code></pre>
+
+<p>The <em>add</em> statements also accepts vectors of variables and coefficients.</p>
+
+<h4>
+<a id="fast-model-building" class="anchor" href="#fast-model-building" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fast model building</h4>
+
+<p>Chunks of a model are buffered in heap for model building before being sent to the native lib. The size of the buffer can be set by the user. Models can be formulated in a row-by-row fashion, without bothering about possible performance bottlenecks. Models with millions of constraints can be generated quickly.</p>
+
+<h4>
+<a id="direct-memory-access" class="anchor" href="#direct-memory-access" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Direct memory access</h4>
+
+<p>Once a model is build it only lives in native memory, with the exception of referenced objects of variables and constraints which remein in heap. To update model coefficients, the model is accessed directly in native memory via direct byte buffers that are provided by the <a href="BridJ">https://github.com/nativelibs4java/BridJ</a> native interface. When the model gets gc'ed, native memory will be released automatically.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<h4>
+<a id="deployment-via-maven" class="anchor" href="#deployment-via-maven" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Deployment via Maven</h4>
+
+<p>This is still on the todo.</p>
+
+<h4>
+<a id="all-in-one-jar-file" class="anchor" href="#all-in-one-jar-file" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>All-in-one jar file</h4>
+
+<p>The Java jar file contains the native libs for the most important host systems (Mac, Win 64, Linux 64), so there won't be <code>UnsatisfiedLinkeError</code>messages and there is no messing around with setting build paths. A copy of the native libs will be copied to a temporary directory runtime. Simply import the jar. See release page to download the latest built.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Clp-java maintained by <a href="https://github.com/loehndorf">loehndorf</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
