@@ -36,7 +36,8 @@ Once a model is build it only lives in native memory, with the exception of refe
 This is still on the todo.
 
 #### All-in-one jar file
+Download the [latest build](https://github.com/loehndorf/clp-java/releases/latest) of the jar from the release page.
 
-The Java jar file contains the native libs for the most important host systems (Mac, Win 64, Linux 64), so there won't be `UnsatisfiedLinkeError`messages and there is no messing around with setting build paths. A copy of the native libs will be copied to a temporary directory runtime. Simply import the jar. See release page to download the latest built.
+The jar file contains the native libs for the most important host systems (Mac, Win 64, Linux 64), so there won't be `UnsatisfiedLinkError`messages and there is no messing around with setting build paths. A copy of the native libs will be copied to a temporary directory runtime. Simply import the jar. See release page to download the latest built.
 
 
