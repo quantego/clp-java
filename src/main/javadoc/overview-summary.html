@@ -90,27 +90,27 @@
 <!--   -->
 </a>
 <div class="subTitle">
-<div class="block"><h2>clp-java</h2>
-<p>
-<a href="http://https://github.com/loehndorf/clp-java/">clp-java</a>: Java-style linear programming with CLP.
-</p>
-<p>
-To build a linear programming model, create a new <a href="com/quantego/clp/CLP.html" title="class in com.quantego.clp"><code>CLP</code></a> instance. Instances of all other classes are created from there. Builders are provided to get as close as possible to algebraic modeling.
-</p>
-<p>
-To get started quickly, check out the following functions:
-<ul>
-<li><a href="com/quantego/clp/CLP.html#addVariable()"><code>CLP.addVariable()</code></a> adds a <a href="com/quantego/clp/CLPVariable.html" title="class in com.quantego.clp"><code>CLPVariable</code></a> to the model.</li>
-<li><a href="com/quantego/clp/CLPVariable.html" title="class in com.quantego.clp"><code>CLPVariable</code></a> serves as a builder for variables. For example <code>com.quantego.clp.CLPVariable.ub(double)</code> adds the variable upper bound, or <code>com.quantego.clp.CLPVariable.obj(double)</code> sets the objective coefficient.
-<li><a href="com/quantego/clp/CLP.html#createExpression()"><code>CLP.createExpression()</code></a> provides a builder to create linear expressions. Simply call <a href="com/quantego/clp/CLPExpression.html#leq(double)"><code>CLPExpression.leq(double)</code></a> to add a <a href="com/quantego/clp/CLPExpression.html" title="class in com.quantego.clp"><code>CLPExpression</code></a> as less-or-equal <a href="com/quantego/clp/CLPConstraint.html" title="class in com.quantego.clp"><code>CLPConstraint</code></a>.</li>
-</ul>
-</p>
-<p>
-<a href="com/quantego/clp/CLP.html#toString()"><code>CLP.toString()</code></a> returns the complete model in .lp format, for cross-validation. To solve the model use <a href="com/quantego/clp/CLP.html#minimize()"><code>CLP.minimize()</code></a> or <a href="com/quantego/clp/CLP.html#maximize()"><code>CLP.maximize()</code></a>. 
-</p>
-<p>
-The solution can be obtained via <a href="com/quantego/clp/CLPVariable.html#getSolution()"><code>getSolution()</code></a>.
-</p></div>
+<div class="block">	<h1>Overview</h1>
+	<h2>Installation</h2>
+	<p>Download the latest <a href="https://github.com/loehndorf/clp-java/releases/latest">jar file</a> and add it to your build path, or clone the <a href="https://github.com/loehndorf/clp-java">source</a> into a local git repository. </p>
+	<h2>Usage</h2>
+	<p>
+	To build a new linear programming model, create a {@link com.quantego.clp.CLP} instance. Instances of all other classes are created from there. Builders are provided to get as close as possible to algebraic modeling.
+	</p>
+	<p>
+	To get started quickly, check out the following functions:
+	<ul>
+	<li>{@link com.quantego.clp.CLP#addVariable()} adds a {@link com.quantego.clp.CLPVariable} to the model.</li>
+	<li>{@link com.quantego.clp.CLPVariable} serves as a builder for variables. For example {@link com.quantego.clp.CLPVariable#ub(double)} adds the variable upper bound, or {@link com.quantego.clp.CLPVariable#obj(double)} sets the objective coefficient.
+	<li>{@link com.quantego.clp.CLP#createExpression()} provides a builder to create linear expressions. Simply call {@link com.quantego.clp.CLPExpression#leq(double)} to add a {@link com.quantego.clp.CLPExpression} as less-or-equal {@link com.quantego.clp.CLPConstraint}.</li>
+	</ul>
+	</p>
+	<p>
+	{@link com.quantego.clp.CLP#toString()} returns the complete model in .lp format, for cross-validation. To solve the model use {@link com.quantego.clp.CLP#minimize()} or {@link com.quantego.clp.CLP#maximize()}. 
+	</p>
+	<p>
+	The solution can be obtained via {@link com.quantego.clp.CLPVariable#getSolution()}.
+	</p></div>
 </div>
 </div>
 <!-- ======= START OF BOTTOM NAVBAR ====== -->
