@@ -1069,12 +1069,5 @@ class CLPNative {
 	public static interface CLPSolve {
 		
 	};
-//	/** Undefined type */
-//	public static interface CoinBigIndex {
-//		
-//	};
-//	/** Undefined type */
-//	public static interface clp_callback {
-//		
-//	};
+
 }
