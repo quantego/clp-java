@@ -8,7 +8,23 @@ import com.quantego.clp.CLPConstraint.TYPE;
 import com.quantego.clp.CLPNative.*;
 
 /**
- * Java interface for the CLP linear solver. 
+ * <p>Java interface for the CLP linear solver. The implementation provides a light-weight wrapper that 
+ * creates as little overhead as possible. If no variables or constraints are referenced, the memory 
+ * footprint in Java heap is negligible.</p>
+ * 
+ * <p>Chunks of a model are buffered in heap for model building before 
+ * being sent to the native lib. The size of the buffer can be set with {@link CLP#buffer(int)}. The buffer 
+ * helps to formulate models in a row-by-row fashion, without bothering about possible performance bottlenecks. 
+ * Models with millions of constraints can be generated quickly.</p>
+ * 
+ * <p>To update model coefficients, the model is accessed 
+ * directly in native memory via direct byte buffers that are provided by the 
+ * <a href="https://github.com/nativelibs4java/BridJ">BridJ</a> native interface. 
+ * When the model gets gc'ed, native memory will be released automatically.</p>
+ * 
+ * <p> For debugging a model, use {@link CLP#verbose(int)} to set the internal log level of CLP which will show some solution information
+ * during the solution process. {@link CLP#toString()} returns the model as string in .lp format (Xpress style), 
+ * and {@link CLP#printModel()} sends it to standard out in the same format.</p> 
  * @author Nils Loehndorf
  *
  */

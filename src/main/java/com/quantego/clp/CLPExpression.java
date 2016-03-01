@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
- * Builder class to create the left-hand side of a {@link CLPConstraint}. Use {@link CLP#buildExpression()} to create a new instance.
+ * Builder class to create the left-hand side of a {@link CLPConstraint}. Use {@link CLP#createExpression()} to create a new instance.
  * @author Nils Loehndorf
  *
  */
