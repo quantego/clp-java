@@ -1,6 +1,6 @@
-# CLP for Java
+# Linear Programming in Java
 
-Java interface for the CLP linear solver, optimized towards fast model building and fast resolves. The interface is a vital part of the [QUASAR stochastic optimizer](https://github.com/quantego/quasar) and serves as the default linear solver. QUASAR typically solves millions of small linear programs and relies on a fast and light-weight interface.
+Java interface for the [CLP linear solver](https://projects.coin-or.org/Clp), optimized towards fast model building and fast resolves. The interface is a vital part of the [QUASAR stochastic optimizer](https://github.com/quantego/quasar) and serves as the default linear solver. 
 
 ## Overview
 
@@ -21,6 +21,8 @@ model.createExpression().add(3,x).add(4,y).leq(10);
 ```
 The *add* statements also accepts vectors of variables and coefficients.
 
+See the [javadoc](http://loehndorf.github.io/clp-java) for further reference.
+
 #### Fast model building
 
 Chunks of a model are buffered in heap for model building before being sent to the native lib. The size of the buffer can be set by the user. Models can be formulated in a row-by-row fashion, without bothering about possible performance bottlenecks. Models with millions of constraints can be generated quickly.
@@ -31,12 +33,13 @@ Once a model is build it only lives in native memory, with the exception of refe
 
 ## Installation
 
-#### Deployment via Maven
-
-This is still on the todo.
-
 #### All-in-one jar file
+Download the [latest build](https://github.com/loehndorf/clp-java/releases/latest) of the jar from the release page.
 
-The Java jar file contains the native libs for the most important host systems (Mac, Win 64, Linux 64), so there won't be `UnsatisfiedLinkeError`messages and there is no messing around with setting build paths. A copy of the native libs will be copied to a temporary directory runtime. Simply import the jar. See release page to download the latest built.
+The jar file contains the native libs for the most important host systems (Mac, Win 64, Linux 64), so there won't be `UnsatisfiedLinkError`messages and there is no messing around with setting build paths. A copy of the native libs will be created in a temporary directory at runtime. Simply import the jar and you're done.
+
+## Documentation
+
+See the [javadoc](http://loehndorf.github.io/clp-java) for a full class reference.
 
 
