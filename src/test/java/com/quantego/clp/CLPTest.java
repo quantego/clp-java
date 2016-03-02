@@ -11,9 +11,9 @@ public class CLPTest {
 	
 	@Test
 	public void testBuffers() {
-		CLP model = new CLP().buffer(1000).presolve(false).maxIterations(1);
-		int size1 = 100;
-		int size2 = 10000;
+		CLP model = new CLP().buffer(10).presolve(false).maxIterations(1);
+		int size1 = 10;
+		int size2 = 1000;
 		Random gen = new Random(11);
 		CLPVariable[][] massTransport = new CLPVariable[size1][size2];
 		for (int i=0; i<size1; i++) {

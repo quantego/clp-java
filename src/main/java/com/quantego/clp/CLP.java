@@ -323,7 +323,12 @@ public class CLP {
 	}
 	
 	/**
-	 * Print log to standard out (default=0).
+	 * Print CLP log to standard out (default=0).</br>
+	 * 0 - none </br>
+     * 1 - just final info</br>
+     * 2 - basic factorization info</br>
+     * 3 - finer factorization info</br>
+     * 4 - verbose
 	 * @param level
 	 * @return builder
 	 */
@@ -467,7 +472,7 @@ public class CLP {
 	}
 	
 	/**
-	 * Rebuild the model from scratch including
+	 * Rebuild the model from scratch. The previous model is deleted from memory.
 	 */
  	public void reset() {
 		flushBuffers();
