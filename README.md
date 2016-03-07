@@ -34,7 +34,7 @@ Once a model is build it only lives in native memory, with the exception of refe
 ## Installation
 
 #### Maven
-The project is hosted on Maven central. Simply add the following dependency to your project's pom file
+The project is available at the central repository. Simply add the following dependency to your pom file
 ```
 <dependency>
   <groupId>com.quantego</groupId>
