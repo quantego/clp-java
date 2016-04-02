@@ -114,6 +114,11 @@
          <descriptorRefs>
            <descriptorRef>jar-with-dependencies</descriptorRef>
          </descriptorRefs>
+         <archive>
+          <manifest>
+            <mainClass>com.quantego.clp.NativeLoader</mainClass>
+          </manifest>
+        </archive>
        <finalName>${project.artifactId}-${project.version}-full</finalName>
        <appendAssemblyId>false</appendAssemblyId>
        </configuration>

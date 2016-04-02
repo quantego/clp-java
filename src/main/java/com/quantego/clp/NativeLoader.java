@@ -11,20 +11,25 @@ class NativeLoader {
 	static String prefix = "CLPExtractedLib";
 	static String library = "clp-1.16.10";
 	static String pathSep = System.getProperty("file.separator");
+	
+	public static void main(String... args) {
+		load();
+	}
 
 	static void load() {
-		
 		File tempDir = createTempDir(prefix);
 		String osArch = System.getProperty("os.arch");
         String osName = System.getProperty("os.name").toLowerCase();
+        String path;
+        String[] libs;
         if (osName.startsWith("mac")) {
-        	String path = library+"/darwin/";
-        	loadLibrary(tempDir,path,"libClp.dylib");
+        	path = library+"/darwin/";
+        	libs = new String[]{"libCoinUtils.3.dylib","libClp.dylib"};
             System.setProperty("java.library.path", System.getProperty("java.library.path")+":"+tempDir.getAbsolutePath());
         } else if (osName.startsWith("win")) {
         	if (osArch.contains("64")) {
-        		String path = library+"/win64/";
-            	String[] libs = {"libgcc_s_seh_64-1.dll","libstdc++_64-6.dll","libCoinUtils-3.dll","Clp.dll",};
+        		path = library+"/win64/";
+            	libs = new String[]{"libgcc_s_seh_64-1.dll","libstdc++_64-6.dll","libCoinUtils-3.dll","Clp.dll",};
             	for (String lib : libs) 
             		loadLibrary(tempDir,path,lib);
                 System.setProperty("java.library.path", System.getProperty("java.library.path")+";"+tempDir.getAbsolutePath());
@@ -33,13 +38,15 @@ class NativeLoader {
                 throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " notsupported");
             }
         } else if (osName.startsWith("linux")) {
-        	String path = library+"/linux64/";
-        	loadLibrary(tempDir,path,"libClp.so");
+        	path = library+"/linux64/";
+        	libs = new String[]{"libCoinUtils.so.3","libClp.so"};
             System.setProperty("java.library.path", System.getProperty("java.library.path")+":"+tempDir.getAbsolutePath());
 
         } else {
             throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " not supported");
         }
+        for (String lib : libs) 
+    		loadLibrary(tempDir,path,lib);
 	}
 	
 	public static File createTempDir(String prefix) {
