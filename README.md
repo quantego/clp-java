@@ -48,6 +48,11 @@ Download the [latest build](https://github.com/loehndorf/clp-java/releases/lates
 
 The jar file contains the native libs for the most important host systems (Mac, Win 64, Linux 64), so there won't be `UnsatisfiedLinkError`messages and there is no messing around with setting build paths. A copy of the native libs will be created in a temporary directory at runtime. Simply import the jar and you're done.
 
+## Requirements
+
+* Java JDK 8
+* 64-bit Linux, Mac OS, or Windows
+
 ## Documentation
 
 See the [javadoc](http://loehndorf.github.io/clp-java) for a full class reference.
