@@ -27,16 +27,9 @@ class NativeLoader {
         if (osName.startsWith("mac")) {
         	path = library+"/darwin/";
         	libs = new String[]{"libCoinUtils.3.dylib","libClp.dylib"};
-        } else if (osName.startsWith("win")) {
-        	if (osArch.contains("64")) {
-        		path = library+"/win64/";
-            	libs = new String[]{"libgcc_s_seh_64-1.dll","libstdc++_64-6.dll","libCoinUtils-3.dll","Clp.dll",};
-            	for (String lib : libs) 
-            		loadLibrary(tempDir,path,lib);
-        	}
-            else {
-                throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " notsupported");
-            }
+        } else if (osName.startsWith("win") && osArch.contains("64")) {
+        	path = library+"/win64/";
+            libs = new String[]{"libgcc_s_seh_64-1.dll","libstdc++_64-6.dll","libCoinUtils-3.dll","Clp.dll",};
         } else if (osName.startsWith("linux")) {
         	path = library+"/linux64/";
         	libs = new String[]{"libCoinUtils.so.3","libClp.so"};
