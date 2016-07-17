@@ -1,5 +1,6 @@
 package com.quantego.clp;
 
+import org.bridj.BridJ;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
