@@ -21,7 +21,7 @@ model.createExpression().add(3,x).add(4,y).leq(10);
 ```
 The *add* statements also accepts vectors of variables and coefficients.
 
-See the [javadoc](http://loehndorf.github.io/clp-java) for further reference.
+See the [javadoc](http://quantego.github.io/clp-java) for further reference.
 
 #### Fast model building
 
@@ -44,7 +44,7 @@ The project is available at the central repository. Simply add the following dep
 ```
 
 #### All-in-one jar file
-Download the [latest build](https://github.com/loehndorf/clp-java/releases/latest) of the jar from the release page.
+Download the [latest build](https://github.com/quantego/clp-java/releases/latest) of the jar from the release page.
 
 The jar file contains the native libs for the most important host systems (Mac, Win 64, Linux 64), so there won't be `UnsatisfiedLinkError`messages and there is no messing around with setting build paths. A copy of the native libs will be created in a temporary directory at runtime. Simply import the jar and you're done.
 
@@ -55,6 +55,6 @@ The jar file contains the native libs for the most important host systems (Mac, 
 
 ## Documentation
 
-See the [javadoc](http://loehndorf.github.io/clp-java) for a full class reference.
+See the [javadoc](http://quantego.github.io/clp-java) for a full class reference.
 
 
