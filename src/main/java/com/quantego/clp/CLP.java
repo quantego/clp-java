@@ -1,5 +1,7 @@
 package com.quantego.clp;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import org.bridj.Pointer;
@@ -96,12 +98,12 @@ public class CLP {
 		_rowLower = CLPNative.clpGetRowLower(_model);
 		for (int i=0; i<_rowBuffer.size(); i++) {
 			if (_rowBuffer._lower.get(i)==Double.NEGATIVE_INFINITY)
-				_rowLower.set(i+_numNativeRows,Double.NEGATIVE_INFINITY);
+				_rowLower.setDoubleAtIndex(i+_numNativeRows,Double.NEGATIVE_INFINITY);
 		}
 		_rowUpper = CLPNative.clpGetRowUpper(_model);
 		for (int i=0; i<_rowBuffer.size(); i++) {
 			if (_rowBuffer._upper.get(i)==Double.POSITIVE_INFINITY)
-				_rowUpper.set(i+_numNativeRows,Double.POSITIVE_INFINITY);
+				_rowUpper.setDoubleAtIndex(i+_numNativeRows,Double.POSITIVE_INFINITY);
 		}
 		_rowBuffer = new RowBuffer();
 		_dual = CLPNative.clpDualRowSolution(_model);
@@ -129,11 +131,11 @@ public class CLP {
 		_colLower = CLPNative.clpGetColLower(_model);
 		_colUpper = CLPNative.clpGetColUpper(_model);
 		for (Integer index : _colBuffer.objectives.keySet())
-			_obj.set(index, _colBuffer.objectives.get(index));
+			_obj.setDoubleAtIndex(index, _colBuffer.objectives.get(index));
 		for (Integer index : _colBuffer.lower.keySet())
-			_colLower.set(index, _colBuffer.lower.get(index));
+			_colLower.setDoubleAtIndex(index, _colBuffer.lower.get(index));
 		for (Integer index : _colBuffer.upper.keySet())
-			_colUpper.set(index, _colBuffer.upper.get(index));
+			_colUpper.setDoubleAtIndex(index, _colBuffer.upper.get(index));
 		_colBuffer = new ColBuffer();
 		_numNativeCols = _numCols;
 		_primal = CLPNative.clpPrimalColumnSolution(_model);
@@ -154,11 +156,38 @@ public class CLP {
 	}
 	
 	/**
-	 * Store the model in a proprietary CLP format.
+	 * Store the model in a proprietary CLP file format.
 	 * @param filename
 	 */
 	public void storeModel(String filename) {
 		CLPNative.clpSaveModel(_model, Pointer.pointerToCString(filename));
+	}
+	
+	/**
+	 * Restore a model from a proprietary CLP file format.
+	 * @param filename
+	 * @throws IOException 
+	 */
+	public void restoreModel(String filename) throws IOException {
+		if (!new File(filename).canRead())
+			throw new IOException(String.format("File '%s' does not exist or cannot be read.",filename));
+		CLPNative.clpRestoreModel(_model, Pointer.pointerToCString(filename));
+		_rowLower = CLPNative.clpGetRowLower(_model);
+		_rowUpper = CLPNative.clpGetRowUpper(_model);
+		_colLower = CLPNative.clpGetColLower(_model);
+		_colUpper = CLPNative.clpGetColUpper(_model);
+		_elements = CLPNative.clpGetElements(_model);
+		_maximize = CLPNative.clpGetObjSense(_model) == -1;
+		_index = null;
+		_starts = null;
+		_dual = CLPNative.clpDualRowSolution(_model);
+		_obj = CLPNative.clpGetObjCoefficients(_model);
+		_primal = CLPNative.clpPrimalColumnSolution(_model);
+		_numCols = CLPNative.clpGetNumCols(_model);
+		_numRows = CLPNative.clpGetNumRows(_model);
+		_numNativeCols = _numCols;
+		_numNativeRows = _numRows;
+		_numElements = CLPNative.clpGetNumElements(_model);
 	}
 	
 	/**
@@ -169,7 +198,7 @@ public class CLP {
 	public double getDualSolution(CLPConstraint constraint) {
 		if (constraint._index >= _numNativeRows) 
 			flushBuffers();
-		return _dual.get(constraint._index);
+		return _dual.getDoubleAtIndex(constraint._index);
 	}
 	
 	/**
@@ -180,7 +209,7 @@ public class CLP {
 	public double getSolution(CLPVariable variable) {
 		if (variable._index >= _numNativeCols)
 			flushBuffers();
-		return _primal.get(variable._index);
+		return _primal.getDoubleAtIndex(variable._index);
 	}
 	
 	/**
@@ -189,10 +218,10 @@ public class CLP {
 	 * @param lb
 	 * @param ub
 	 */
-	public void setVariableBounds(CLPVariable variable, Double lb, Double ub) {
+	public void setVariableBounds(CLPVariable variable, double lb, double ub) {
 		if (variable._index < _numNativeCols) {
-			_colLower.set(variable._index,lb);
-			_colUpper.set(variable._index,ub);
+			_colLower.setDoubleAtIndex(variable._index,lb);
+			_colUpper.setDoubleAtIndex(variable._index,ub);
 		}
 		else {
 			_colBuffer.lower.put(variable._index, lb);
@@ -205,10 +234,10 @@ public class CLP {
 	 * @param variable
 	 * @param value
 	 */
-	public void setVariableLowerBound(CLPVariable variable, Double value) {
+	public void setVariableLowerBound(CLPVariable variable, double value) {
 		value = checkValue(value);
 		if (variable._index < _numNativeCols)
-			_colLower.set(variable._index,value);
+			_colLower.setDoubleAtIndex(variable._index,value);
 		else
 			_colBuffer.lower.put(variable._index, value);
 	}
@@ -218,10 +247,10 @@ public class CLP {
 	 * @param variable
 	 * @param value
 	 */
-	public void setVariableUpperBound(CLPVariable variable, Double value) {
+	public void setVariableUpperBound(CLPVariable variable, double value) {
 		value = checkValue(value);
 		if (variable._index < _numNativeCols)
-			_colUpper.set(variable._index,value);
+			_colUpper.setDoubleAtIndex(variable._index,value);
 		else
 			_colBuffer.upper.put(variable._index, value);
 	}
@@ -241,26 +270,25 @@ public class CLP {
 	 * @param variable
 	 * @param value
 	 */
-	public void setConstraintCoefficient(CLPConstraint constraint, CLPVariable variable, Double value) {
+	public void setConstraintCoefficient(CLPConstraint constraint, CLPVariable variable, double value) {
 		if (constraint._index < _numNativeRows) {
-			int[] starts = getStarts();
 			int[] index = getIndex();
+			int[] starts = getStarts();
 			int pos = starts[variable._index];
-			int end = pos + starts[variable._index+1];
+			int end = starts[variable._index+1];
 			while(index[pos++]!=constraint._index) {
 				if (pos>=end)
 					throw new IllegalStateException(String.format("Constraint %s does not contain variable %s. Coefficient not set.",constraint.toString(),variable.toString()));
 			}
-			pos--;
 			value = checkValue(value);
-			_elements.set(pos,value);
+			_elements.setDoubleAtIndex(pos-1,value);
 		}
 		else {
 			_rowBuffer.setElement(constraint._index,variable._index, value);
 		}
 	}
 	
-	private Double checkValue(Double value) {
+	private double checkValue(double value) {
 		if (Math.abs(value)>=_smallestElement)
 			return value;
 		return 0.;
@@ -272,12 +300,12 @@ public class CLP {
 	 * @param lb
 	 * @param ub
 	 */
-	public void setConstraintBounds(CLPConstraint constraint, Double lb, Double ub) {
+	public void setConstraintBounds(CLPConstraint constraint, double lb, double ub) {
 		lb = checkValue(lb);
 		ub = checkValue(ub);
 		if (constraint._index < _numNativeRows) {
-			_rowLower.set(constraint._index,lb);
-			_rowUpper.set(constraint._index,ub);
+			_rowLower.setDoubleAtIndex(constraint._index,lb);
+			_rowUpper.setDoubleAtIndex(constraint._index,ub);
 		}
 		else {
 			_rowBuffer._lower.set(constraint._index,lb);
@@ -291,10 +319,10 @@ public class CLP {
 	 * @param constraint
 	 * @param value
 	 */
-	public void setConstraintLowerBound(CLPConstraint constraint, Double value) {
+	public void setConstraintLowerBound(CLPConstraint constraint, double value) {
 		value = checkValue(value);
 		if (constraint._index < _numNativeRows)
-			_rowLower.set(constraint._index,value);
+			_rowLower.setDoubleAtIndex(constraint._index,value);
 		else 
 			_rowBuffer._lower.set(constraint._index,value);
 	}
@@ -304,10 +332,10 @@ public class CLP {
 	 * @param constraint
 	 * @param value
 	 */
-	public void setConstraintUpperBound(CLPConstraint constraint, Double value) {
+	public void setConstraintUpperBound(CLPConstraint constraint, double value) {
 		value = checkValue(value);
 		if (constraint._index < _numNativeRows) 
-			_rowUpper.set(constraint._index,value);
+			_rowUpper.setDoubleAtIndex(constraint._index,value);
 		else 
 			_rowBuffer._upper.set(constraint._index,value);
 			
@@ -392,10 +420,10 @@ public class CLP {
 	 * @param variable
 	 * @param value
 	 */
-	public void setObjectiveCoefficient(CLPVariable variable, Double value) {
+	public void setObjectiveCoefficient(CLPVariable variable, double value) {
 		value = checkValue(value);
 		if (variable._index < _numNativeCols) 
-			_obj.set(variable._index, value);
+			_obj.setDoubleAtIndex(variable._index, value);
 		else 
 			_colBuffer.objectives.put(variable._index, value);
 	}
@@ -404,7 +432,7 @@ public class CLP {
 	 * Set objective constant term.
 	 * @param value
 	 */
-	public void setObjectiveOffset(Double value) {
+	public void setObjectiveOffset(double value) {
 		value = checkValue(value);
 		CLPNative.clpSetObjectiveOffset(_model, value);
 	}
@@ -424,7 +452,7 @@ public class CLP {
 	 * @param rhs right-hand side coefficient
 	 * @return
 	 */ 
-	public CLPObjective addObjective(Map<CLPVariable,Double> terms, Double offset) {
+	public CLPObjective addObjective(Map<CLPVariable,Double> terms, double offset) {
 		for (CLPVariable var : terms.keySet())
 			setObjectiveCoefficient(var,terms.get(var));
 		setObjectiveOffset(offset);
@@ -438,7 +466,7 @@ public class CLP {
 	 * @param rhs right-hand side coefficient
 	 * @return
 	 */
-	public CLPConstraint addConstraint(Map<CLPVariable,Double> lhs, TYPE type, Double rhs) {
+	public CLPConstraint addConstraint(Map<CLPVariable,Double> lhs, TYPE type, double rhs) {
 		if (lhs.isEmpty()) throw new IllegalArgumentException("The constraint does not contain variables.");
 		if (_rowBuffer.size()>=_bufferSize)
 			flushBuffers();
@@ -566,7 +594,7 @@ public class CLP {
 	}
 	
 	/**
-	 * Set the smallest coefficient value considered as non-zero (default=1.e-10). All values smaller than this will be set to zero.
+	 * Set the smallest coefficient value considered as non-zero (default = 1.e-20). All values smaller than this will be set to zero.
 	 * @param value
 	 * @return builder
 	 */
@@ -783,7 +811,7 @@ public class CLP {
 			return toDoubleArray(_upper);
 		}
 		
-		void setElement(int rowIndex, int colIndex, Double value) {
+		void setElement(int rowIndex, int colIndex, double value) {
 			checkValue(value);
 			int pos = _starts.get(rowIndex);
 			int end = pos + _starts.get(rowIndex+1);
@@ -796,7 +824,7 @@ public class CLP {
 			_elements.set(pos,value);
 		}
 		
-		void addRow(Map<CLPVariable,Double> lhs, TYPE type, Double rhs) {
+		void addRow(Map<CLPVariable,Double> lhs, TYPE type, double rhs) {
 			rhs = checkValue(rhs);
 			switch(type) {
 			case EQ:
@@ -819,7 +847,7 @@ public class CLP {
 			_starts.add(_elements.size()+lhs.size());
 			for (CLPVariable variable : lhs.keySet()) {
 				_columns.add(variable._index);
-				Double value = lhs.get(variable);
+				double value = lhs.get(variable);
 				value = checkValue(value);
 				_elements.add(value);
 			}
@@ -864,8 +892,8 @@ public class CLP {
 			}
 		}
 		for (int row=0; row<_numRows; row++) {
-			Double lb = _rowLower.get(row);
-			Double ub = _rowUpper.get(row);
+			double lb = _rowLower.getDoubleAtIndex(row);
+			double ub = _rowUpper.get(row);
 			if (Double.compare(lb,ub)==0)
 				modelString.append(constraintStrings.get(row).append(" = ").append(lb).append("\n"));
 			else if (lb==Double.NEGATIVE_INFINITY && ub<Double.POSITIVE_INFINITY)
@@ -876,9 +904,9 @@ public class CLP {
 		//bounds
 		modelString.append("Bounds\n");
 		for (int col=0; col<_numCols; col++) {
-			Double lb = _colLower.get(col);
-			Double ub = _colUpper.get(col);
-			if (lb==0 && ub<Double.POSITIVE_INFINITY) 
+			double lb = _colLower.get(col);
+			double ub = _colUpper.get(col);
+			if (lb==0 && ub<Double.MAX_VALUE) 
 				modelString.append(getVariableName(col)).append(" <= ").append(ub).append("\n");
 			else if (lb==Double.NEGATIVE_INFINITY && ub==Double.POSITIVE_INFINITY)
 				modelString.append("-inf <= ").append(getVariableName(col)).append(" <= inf\n");
@@ -886,7 +914,7 @@ public class CLP {
 				modelString.append(lb).append(" <= ").append(getVariableName(col)).append(" <= inf").append("\n");
 			else if (lb==Double.NEGATIVE_INFINITY && ub<Double.POSITIVE_INFINITY)
 				modelString.append("-inf <= ").append(getVariableName(col)).append(" <= ").append(ub).append("\n");
-			else if (lb>Double.NEGATIVE_INFINITY && ub<Double.POSITIVE_INFINITY)
+			else if (lb>-Double.MAX_VALUE && ub<Double.MAX_VALUE)
 				modelString.append(lb).append(" <= ").append(getVariableName(col)).append(" <= ").append(ub).append("\n");
 		}
 		modelString.append("End");
