@@ -50,7 +50,7 @@ The jar file contains the native libs for the most important host systems (Mac, 
 
 ## Requirements
 
-* Java JDK 8
+* Java JDK 7
 * 64-bit Linux, Mac OS, or Windows
 
 ## Documentation
