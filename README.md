@@ -57,4 +57,7 @@ The jar file contains the native libs for the most important host systems (Mac, 
 
 See the [javadoc](http://quantego.github.io/clp-java) for a full class reference.
 
+## Author
+Nils Löhndorf, WU Vienna University of Business and Econonomics, Austria
+
 
