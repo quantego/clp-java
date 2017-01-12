@@ -19,9 +19,7 @@ Since there is no operator overloading in Java, algebraic formulations are not p
 ```
 model.createExpression().add(3,x).add(4,y).leq(10);
 ```
-The *add* statements also accepts vectors of variables and coefficients.
-
-See the [javadoc](http://quantego.github.io/clp-java) for further reference.
+The *add* statements also accepts vectors of variables and coefficients. See the [javadoc](http://quantego.github.io/clp-java) for further reference.
 
 #### Fast model building
 
@@ -29,7 +27,7 @@ Chunks of a model are buffered in heap for model building before being sent to t
 
 #### Direct memory access
 
-Once a model is build it only lives in native memory, with the exception of referenced objects of variables and constraints which remein in heap. To update model coefficients, the model is accessed directly in native memory via direct byte buffers that are provided by the [https://github.com/nativelibs4java/BridJ](BridJ) native interface. When the model gets gc'ed, native memory will be released automatically.
+Once a model is build it only lives in native memory, with the exception of referenced objects of variables and constraints which remain in heap. To update model coefficients, the model is accessed directly in native memory via direct byte buffers that are provided by the [https://github.com/nativelibs4java/BridJ](BridJ) native interface. When the model gets gc'ed, native memory will be released automatically.
 
 ## Installation
 
@@ -58,6 +56,6 @@ The jar file contains the native libs for the most important host systems (Mac, 
 See the [javadoc](http://quantego.github.io/clp-java) for a full class reference.
 
 ## Author
-Nils Löhndorf, WU Vienna University of Business and Econonomics, Austria
+Nils Löhndorf, WU Vienna University of Business and Economics, Austria
 
 
