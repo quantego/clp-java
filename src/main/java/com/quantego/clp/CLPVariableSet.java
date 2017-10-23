@@ -13,6 +13,7 @@ public class CLPVariableSet {
 	double _lb;
 	double _ub = Double.POSITIVE_INFINITY;
 	double _obj;
+	double _qobj;
 	String _name;
 	
 	CLPVariableSet(CLP solver, int size) {
@@ -38,6 +39,16 @@ public class CLPVariableSet {
 	 */
 	public CLPVariableSet obj(double value) {
 		_obj = value;
+		return this;
+	}
+	
+	/**
+	 * Quadratic objective coefficient for these variables.
+	 * @param value
+	 * @return builder
+	 */
+	public CLPVariableSet quad(double value) {
+		_qobj = value;
 		return this;
 	}
 	
@@ -84,6 +95,7 @@ public class CLPVariableSet {
 			if (_lb!=0)var.lb(_lb);
 			if (_ub!=Double.POSITIVE_INFINITY) var.ub(_ub);
 			if (_obj!=0) var.obj(_obj);
+			if (_qobj!=0) var.quad(_qobj);
 			set[i] = var;
 		}
 		return set;

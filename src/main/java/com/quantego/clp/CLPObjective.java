@@ -25,6 +25,17 @@ public class CLPObjective {
 	}
 	
 	/**
+	 * Set the quadratic coefficient of the given variable.
+	 * @param variable 
+	 * @param value
+	 * @return builder
+	 */
+	public CLPObjective setQuadTerm(CLPVariable variable, double value) {
+		_solver.setQuadraticObjectiveCoefficient(variable, value);
+		return this;
+	}
+	
+	/**
 	 * Set the coefficient of the given variable.
 	 * @param variable 
 	 * @param value

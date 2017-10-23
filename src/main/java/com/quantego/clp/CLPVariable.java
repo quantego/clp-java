@@ -36,6 +36,16 @@ public class CLPVariable {
 	}
 	
 	/**
+	 * Quadratic objective coefficient of this variable.
+	 * @param value
+	 * @return builder
+	 */
+	public CLPVariable quad(double value) {
+		_solver.setQuadraticObjectiveCoefficient(this,value);
+		return this;
+	}
+	
+	/**
 	 * Set variable bounds. By default variables are 0 <= x <= inf.
 	 * @param lb
 	 * @param ub

@@ -63,6 +63,7 @@ public class CLP {
 	int _numNativeRows;
 	ColBuffer _colBuffer = new ColBuffer();
 	RowBuffer _rowBuffer = new RowBuffer();
+	QuadraticObjective _qobj;
 	
 	/**
 	 * Create an new model instance.
@@ -82,8 +83,12 @@ public class CLP {
 	private void flushBuffers() {
 		if (_colBuffer.size()>0)
 			addCols();
+		if (_numRows == 0)
+			_rowBuffer.addDummyRow();
 		if (_rowBuffer.size()>0)
 			addRows();
+		if (_qobj != null)
+			_qobj.update(_model);	
 	}
 	
 	private void addRows() {
@@ -140,6 +145,17 @@ public class CLP {
 		_numNativeCols = _numCols;
 		_primal = CLPNative.clpPrimalColumnSolution(_model);
 	} 
+	
+	private void neg() {
+		if (_colBuffer.size()>0)
+			addCols();
+		if (_rowBuffer.size()>0)
+			addRows();
+		for (int col=0; col<_numCols; col++) 
+			_obj.setDoubleAtIndex(col, -_obj.getDoubleAtIndex(col));
+		if (_qobj != null)
+			_qobj.neg();
+	}
 	
 	String getVariableName(int index) {
 		String name = _varNames.get(index);
@@ -198,7 +214,7 @@ public class CLP {
 	public double getDualSolution(CLPConstraint constraint) {
 		if (constraint._index >= _numNativeRows) 
 			flushBuffers();
-		return _dual.getDoubleAtIndex(constraint._index);
+		return _maximize ? -_dual.getDoubleAtIndex(constraint._index) : _dual.getDoubleAtIndex(constraint._index);
 	}
 	
 	/**
@@ -380,8 +396,9 @@ public class CLP {
 	 * @return builder
 	 */
 	public CLP maximization() {
+		if (!_maximize)
+			neg();
 		_maximize = true;
-		CLPNative.clpSetOptimizationDirection(_model, -1);
 		return this;
 	}
 	
@@ -390,8 +407,9 @@ public class CLP {
 	 * @return builder
 	 */
 	public CLP minimization() {
+		if (_maximize)
+			neg();
 		_maximize = false;
-		CLPNative.clpSetOptimizationDirection(_model, 1);
 		return this;
 	}
 	
@@ -422,10 +440,32 @@ public class CLP {
 	 */
 	public void setObjectiveCoefficient(CLPVariable variable, double value) {
 		value = checkValue(value);
+		if (_maximize)
+			value = -value;
 		if (variable._index < _numNativeCols) 
 			_obj.setDoubleAtIndex(variable._index, value);
 		else 
 			_colBuffer.objectives.put(variable._index, value);
+	}
+	
+	/**
+	 * Set the objective coefficient of the given variable.
+	 * @param variable
+	 * @param value
+	 */
+	public void setQuadraticObjectiveCoefficient(CLPVariable variable, double value) {
+		value = checkValue(value);
+		if (_maximize && value>0)
+			throw new IllegalArgumentException(String.format(
+					"Quadratic objective coefficient of variable %s must not be greater than zero.", variable.toString()));
+		if (!_maximize && value<0)
+			throw new IllegalArgumentException(String.format(
+					"Quadratic objective coefficient of variable %s must not be less than zero.", variable.toString()));
+		if (variable._index >= _numCols)
+			setObjectiveCoefficient(variable,0);
+		if (_qobj == null)
+			_qobj = new QuadraticObjective();
+		_qobj.put(variable._index, _maximize ? -value : value);
 	}
 	
 	/**
@@ -479,6 +519,7 @@ public class CLP {
 	 * @return solution {@link STATUS}
 	 */
 	public STATUS solve() {
+		//take care of empty problem
 		flushBuffers();
 		if (_solve!=null)
 			CLPNative.clpInitialSolveWithOptions(_model,_solve);
@@ -530,11 +571,13 @@ public class CLP {
 		_colUpper = CLPNative.clpGetColUpper(newModel);
 		for (int i=0; i<_numCols; i++)
 			_colUpper.set(i,colUpper.get(i));
-		CLPNative.clpSetOptimizationDirection(newModel, _maximize?-1:1);
+//		CLPNative.clpSetOptimizationDirection(newModel, _maximize?-1:1);
 		_elements = CLPNative.clpGetElements(newModel);
 		_index = null;
 		_starts = null;
 		_dual = CLPNative.clpDualRowSolution(newModel);
+		if (_qobj != null) 
+			_qobj.update(newModel);
 		_obj = CLPNative.clpGetObjCoefficients(newModel);
 		_primal = CLPNative.clpPrimalColumnSolution(newModel);
 		CLPNative.clpDeleteModel(_model);
@@ -564,7 +607,7 @@ public class CLP {
 	 * @return the optimal objective value
 	 */
 	public double getObjectiveValue() {
-		return _objValue;
+		return _maximize? -_objValue : _objValue;
 	}
 	
 	/**
@@ -750,6 +793,63 @@ public class CLP {
 		return ar;
 	}
 	
+	private class QuadraticObjective {
+		HashMap<Integer,Double> _buffer = new HashMap<>();
+		private Pointer<Double> _elements;
+		private Pointer<Integer> _starts;
+		private Pointer<Integer> _index;
+		int _numElements;
+		boolean _hasChange;
+		
+		void flush() {
+			if (_buffer.isEmpty()) return;
+			int[] starts = new int[_numCols+1];
+			starts[_numCols] = _numCols;
+			int[] index = new int[_numCols];
+			for (int i=0; i<_numCols; i++) {
+				starts[i] = i;
+				index[i] = i;
+			}
+			_starts = Pointer.pointerToInts(starts);
+			_index = Pointer.pointerToInts(index);
+			Pointer<Double> elements = Pointer.allocateDoubles(_numNativeCols);
+			if (_elements != null)
+				_elements.copyTo(elements,_numElements);
+			_numElements = _numNativeCols;
+			_elements = elements;
+			for (Integer i : _buffer.keySet())
+				_elements.setDoubleAtIndex(i, _buffer.get(i));
+			_buffer.clear();
+		}
+		
+		void update(Pointer<CLPSimplex> model) {
+			if (!_hasChange) return;
+			flush();
+			CLPNative.clpLoadQuadraticObjective(model, _numCols, _starts, _index, _elements);
+			_obj = CLPNative.clpGetObjCoefficients(model);
+		}
+		
+		void put(int index, double value) {
+			value *= 2;
+			if (index < _numElements)
+				_elements.setDoubleAtIndex(index, value);
+			else
+				_buffer.put(index, value);
+			_hasChange = true;
+		}
+		
+		double get(int index) {
+			return _elements.getDoubleAtIndex(index);
+		}
+		
+		void neg() {
+			for (int i=0; i<_numCols; i++)
+				_elements.setDoubleAtIndex(i, -_elements.getDoubleAtIndex(i));
+			_hasChange = true;
+			update(_model);
+		}
+	}
+	
 	/**
 	 * Buffer for new variables added to the model.
 	 * @author Nils Loehndorf
@@ -824,6 +924,15 @@ public class CLP {
 			_elements.set(pos,value);
 		}
 		
+		void addDummyRow() {
+			_lower.add(Double.NEGATIVE_INFINITY);
+			_upper.add(Double.POSITIVE_INFINITY);
+			_starts.add(_elements.size()+1);
+			_columns.add(0);
+			_elements.add(1.);
+			_numRows++;
+		}
+		
 		void addRow(Map<CLPVariable,Double> lhs, TYPE type, double rhs) {
 			rhs = checkValue(rhs);
 			switch(type) {
@@ -872,7 +981,16 @@ public class CLP {
 		modelString.append(_maximize ? "Maximize" : "Minimize").append("\nobj:");
 		//objective function
 		for (int col=0; col<_numCols; col++) {
-			modelString.append(termToString(_obj.getDoubleAtIndex(col),getVariableName(col)));
+			double c = _obj.getDoubleAtIndex(col);
+			modelString.append(termToString(_maximize ? -c : c,getVariableName(col)));
+		}
+		if (_qobj != null) {
+			modelString.append(" + [");
+			for (int col=0; col<_numCols; col++) {
+				double c = _qobj.get(col);
+				modelString.append(termToString(_maximize ? -c : c, getVariableName(col)+"^2"));
+			}
+			modelString.append(" ] / 2");
 		}
 		modelString.append("\nSubject To\n");
 		//constraints
@@ -908,11 +1026,11 @@ public class CLP {
 			double ub = _colUpper.get(col);
 			if (lb==0 && ub<Double.MAX_VALUE) 
 				modelString.append(getVariableName(col)).append(" <= ").append(ub).append("\n");
-			else if (lb==Double.NEGATIVE_INFINITY && ub==Double.POSITIVE_INFINITY)
+			else if (lb<=-Double.MAX_VALUE && ub>=Double.MAX_VALUE)
 				modelString.append("-inf <= ").append(getVariableName(col)).append(" <= inf\n");
-			else if (lb!=0 && lb>Double.POSITIVE_INFINITY && ub==Double.POSITIVE_INFINITY)
+			else if (lb!=0 && lb>-Double.MAX_VALUE && ub>=Double.MAX_VALUE)
 				modelString.append(lb).append(" <= ").append(getVariableName(col)).append(" <= inf").append("\n");
-			else if (lb==Double.NEGATIVE_INFINITY && ub<Double.POSITIVE_INFINITY)
+			else if (lb<=-Double.MAX_VALUE && ub<Double.MAX_VALUE)
 				modelString.append("-inf <= ").append(getVariableName(col)).append(" <= ").append(ub).append("\n");
 			else if (lb>-Double.MAX_VALUE && ub<Double.MAX_VALUE)
 				modelString.append(lb).append(" <= ").append(getVariableName(col)).append(" <= ").append(ub).append("\n");

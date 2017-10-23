@@ -6,6 +6,8 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import com.quantego.clp.CLP.ALGORITHM;
+
 
 public class CLPTest {
 	
@@ -59,6 +61,15 @@ public class CLPTest {
 	    		+ "-inf <= x_3 <= inf\n"
 	    		+ "End";
 	    assertEquals(str,solver.toString());
+	}
+	
+	@Test
+	public void testQuad() {
+		CLP clp = new CLP().maximization();
+		CLPVariable var = clp.addVariable().obj(2).quad(-1);
+		clp.solve();
+		assertTrue(clp.getObjectiveValue()==1);
+		assertTrue(var.getSolution()==1);
 	}
 
 }
