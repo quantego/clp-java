@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.quantego</groupId>
   <artifactId>clp-java</artifactId>
-  <version>1.16.10</version>
+  <version>1.16.11</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>A linear programming library based on the Coin-OR CLP linear solver.</description>
   <url>https://github.com/loehndorf/clp-java</url>
@@ -98,6 +98,7 @@
        </executions>
        <configuration>
            <additionalparam>-Xdoclint:none</additionalparam>
+           <failOnError>false</failOnError>
        </configuration>
      </plugin>
 	 <plugin>
@@ -123,7 +124,7 @@
        <appendAssemblyId>false</appendAssemblyId>
        </configuration>
       </plugin>
-      <plugin>
+      <!-- <plugin>
 	      <groupId>org.apache.maven.plugins</groupId>
 	      <artifactId>maven-gpg-plugin</artifactId>
 	      <version>1.5</version>
@@ -136,7 +137,7 @@
 	          </goals>
 	        </execution>
 	      </executions>
-    	</plugin>
+    	</plugin> -->
 	</plugins> 
   </build>
 </project>

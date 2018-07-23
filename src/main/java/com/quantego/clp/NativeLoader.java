@@ -10,17 +10,17 @@ import java.io.OutputStream;
 class NativeLoader {
 	
 	static String prefix = "CLPExtractedLib";
-	static String library = "clp-1.16.10";
+	static String library = "clp-1.16.11";
 	static String pathSep = System.getProperty("file.separator");
 	
 	public static void main(String... args) {
 		load();
+		CLPNative.clpNewModel();
 	}
 
 	static void load() {
 		File tempDir = createTempDir(prefix);
         BridJ.addLibraryPath(tempDir.getAbsolutePath());
-
 		String osArch = System.getProperty("os.arch");
         String osName = System.getProperty("os.name").toLowerCase();
         String path;
@@ -30,7 +30,7 @@ class NativeLoader {
         	libs = new String[]{"libCoinUtils.3.dylib","libClp.dylib"};
         } else if (osName.startsWith("win") && osArch.contains("64")) {
         	path = library+"/win64/";
-            libs = new String[]{"libgcc_s_seh_64-1.dll","libstdc++_64-6.dll","libCoinUtils-3.dll","Clp.dll",};
+            libs = new String[]{"libgcc_s_seh-1.dll","libstdc++-6.dll","libCoinUtils-3.dll","Clp.dll"};
         } else if (osName.startsWith("linux")) {
         	path = library+"/linux64/";
         	libs = new String[]{"libCoinUtils.so.3","libClp.so"};

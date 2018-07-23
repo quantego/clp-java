@@ -6,8 +6,6 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.quantego.clp.CLP.ALGORITHM;
-
 
 public class CLPTest {
 	
