@@ -577,7 +577,7 @@ public class CLP {
 		_starts = null;
 		_dual = CLPNative.clpDualRowSolution(newModel);
 		if (_qobj != null) 
-			_qobj.update(newModel);
+			CLPNative.clpLoadQuadraticObjective(newModel, _qobj._numElements, _qobj._starts, _qobj._index, _qobj._elements);
 		_obj = CLPNative.clpGetObjCoefficients(newModel);
 		_primal = CLPNative.clpPrimalColumnSolution(newModel);
 		CLPNative.clpDeleteModel(_model);
