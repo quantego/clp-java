@@ -299,9 +299,8 @@ public class CLP {
 			value = checkValue(value);
 			_elements.setDoubleAtIndex(pos-1,value);
 		}
-		else {
+		else
 			_rowBuffer.setElement(constraint._index,variable._index, value);
-		}
 	}
 	
 	private double checkValue(double value) {
@@ -515,6 +514,22 @@ public class CLP {
 	}
 	
 	/**
+	 * Add a new constraint to the model without using {@link CLP#buildExpression()}.
+	 * @param lhs terms on the left-hand side
+	 * @param type constraint type
+	 * @param rhs right-hand side coefficient
+	 * @return
+	 */
+	public CLPConstraint addConstraint(List<CLPVariable> variables, List<Double> lhs, TYPE type, double rhs) {
+		if (lhs.size()==0) throw new IllegalArgumentException("The constraint does not contain variables.");
+		if (variables.size()!=lhs.size()) throw new IllegalArgumentException("Arrays of unequal size.");
+		if (_rowBuffer.size()>=_bufferSize)
+			flushBuffers();
+		_rowBuffer.addRow(variables,lhs,type,rhs);
+		return new CLPConstraint(this,_numRows++,type);
+	}
+	
+	/**
 	 * Solve the optimization problem. 
 	 * @return solution {@link STATUS}
 	 */
@@ -571,7 +586,6 @@ public class CLP {
 		_colUpper = CLPNative.clpGetColUpper(newModel);
 		for (int i=0; i<_numCols; i++)
 			_colUpper.set(i,colUpper.get(i));
-//		CLPNative.clpSetOptimizationDirection(newModel, _maximize?-1:1);
 		_elements = CLPNative.clpGetElements(newModel);
 		_index = null;
 		_starts = null;
@@ -961,6 +975,33 @@ public class CLP {
 				_elements.add(value);
 			}
 		}
+		
+		void addRow(List<CLPVariable> variables, List<Double> lhs, TYPE type, double rhs) {
+			rhs = checkValue(rhs);
+			switch(type) {
+			case EQ:
+				_lower.add(rhs);
+				_upper.add(rhs);
+				break;
+			case GEQ:
+				_lower.add(rhs);
+				_upper.add(Double.POSITIVE_INFINITY);
+				break;
+			case LEQ:
+				_lower.add(Double.NEGATIVE_INFINITY);
+				_upper.add(rhs);
+				break;
+			default:
+				_lower.add(Double.NEGATIVE_INFINITY);
+				_upper.add(Double.POSITIVE_INFINITY);
+				break;
+			}
+			_starts.add(_elements.size()+lhs.size());
+			for (int i=0; i<variables.size(); i++) {
+				_columns.add(variables.get(i)._index);
+				_elements.add(checkValue(lhs.get(i)));
+			}
+		}
 	}
 	
 	/**
@@ -1005,7 +1046,7 @@ public class CLP {
 			for (int j=begin; j<end; j++) {
 				int row = index[j];
 				double element = _elements.get(j);
-				if (element != 0)
+//				if (element != 0)
 					constraintStrings.get(row).append(termToString(element,getVariableName(col)));
 			}
 		}
