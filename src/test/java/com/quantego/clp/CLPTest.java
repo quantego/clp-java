@@ -69,5 +69,27 @@ public class CLPTest {
 		assertTrue(clp.getObjectiveValue()==1);
 		assertTrue(var.getSolution()==1);
 	}
+	
+	@Test
+	public void testOffset() {
+		CLP clp = new CLP();
+		CLPVariable x1 = clp.addVariable();
+		clp.createExpression().add(4).add(-2, x1).asObjective();
+		clp.createExpression().add(x1).leq(2);
+		CLPVariable x2 = clp.addVariable();
+		clp.createExpression().add(6).add(-2, x2).asObjective();
+		clp.createExpression().add(x2).leq(3);
+		clp.minimize();
+		assertTrue(clp.getObjectiveValue()==0.0);
+		clp = new CLP();
+		x1 = clp.addVariable();
+		clp.createExpression().add(-4).add(2, x1).asObjective();
+		clp.createExpression().add(x1).leq(2);
+		x2 = clp.addVariable();
+		clp.createExpression().add(-6).add(2, x2).asObjective();
+		clp.createExpression().add(x2).leq(3);
+		clp.maximize();
+		assertTrue(clp.getObjectiveValue()==0.0);
+	}
 
 }

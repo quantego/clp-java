@@ -56,6 +56,7 @@ public class CLP {
 	int _numElements;
 	double _objValue = Double.NaN;
 	boolean _maximize;
+	double _offset;
 	
 	int _bufferSize = 100000;
 	double _smallestElement = 1.e-20;
@@ -81,6 +82,7 @@ public class CLP {
 	}
 		
 	private void flushBuffers() {
+		CLPNative.clpSetObjectiveOffset(_model, (_maximize?1:-1)*_offset);
 		if (_colBuffer.size()>0)
 			addCols();
 		if (_numRows == 0)
@@ -473,7 +475,7 @@ public class CLP {
 	 */
 	public void setObjectiveOffset(double value) {
 		value = checkValue(value);
-		CLPNative.clpSetObjectiveOffset(_model, value);
+		_offset = value;
 	}
 	
 	/**
@@ -494,7 +496,7 @@ public class CLP {
 	public CLPObjective addObjective(Map<CLPVariable,Double> terms, double offset) {
 		for (CLPVariable var : terms.keySet())
 			setObjectiveCoefficient(var,terms.get(var));
-		setObjectiveOffset(offset);
+		setObjectiveOffset(_offset+offset);
 		return new CLPObjective(this);
 	}
 	
@@ -1020,6 +1022,7 @@ public class CLP {
 		flushBuffers();
 		StringBuilder modelString = new StringBuilder();
 		modelString.append(_maximize ? "Maximize" : "Minimize").append("\nobj:");
+		if (_offset != 0) modelString.append(" "+_offset);
 		//objective function
 		for (int col=0; col<_numCols; col++) {
 			double c = _obj.getDoubleAtIndex(col);
