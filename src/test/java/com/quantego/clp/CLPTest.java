@@ -1,10 +1,12 @@
 package com.quantego.clp;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
+import java.io.File;
 import java.util.Random;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class CLPTest {
@@ -92,4 +94,12 @@ public class CLPTest {
 		assertTrue(clp.getObjectiveValue()==0.0);
 	}
 
+	@Test
+	public void testMPS() throws Exception {
+		CLP clp = new CLP();
+		File mps = new File(this.getClass().getClassLoader().getResource("10teams.mps").toURI());
+		clp.readMPS(mps);
+		clp.solve();
+		assertEquals(917.,clp.getObjectiveValue(),1e-7);
+	}
 }
