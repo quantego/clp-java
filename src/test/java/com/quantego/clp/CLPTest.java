@@ -96,9 +96,8 @@ public class CLPTest {
 
 	@Test
 	public void testMPS() throws Exception {
-		CLP clp = new CLP();
 		File mps = new File(this.getClass().getClassLoader().getResource("10teams.mps").toURI());
-		clp.readMPS(mps);
+		CLP clp = CLP.createFromMPS(mps);
 		clp.solve();
 		assertEquals(917.,clp.getObjectiveValue(),1e-7);
 	}

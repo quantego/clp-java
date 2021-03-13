@@ -76,14 +76,21 @@ public class CLP {
 		_model = init();
 	}
 
-	public void readMPS(File f) {
-		// Make JNA Pointer to file
+	public static CLP createFromMPS(File f) {
+		// Make BridJ Pointer to file
 		String path = f.toPath().toString()+'\0';
 		Pointer<Byte> ptr = Pointer.allocateBytes(path.getBytes().length);
 		ptr.setBytes(path.getBytes());
 
 		// Read MPS
-		CLPNative.clpReadMps(_model, ptr, 1, 0);
+		CLP clp = new CLP();
+		CLPNative.clpReadMps(clp._model, ptr, 1, 0);
+
+		// Explicitly release manually allocated memory to be on the safe side
+		// This is normally freed by finalize method from BridJ
+		ptr.release();
+
+		return clp;
 	}
 
 	Pointer<CLPSimplex> init() {
