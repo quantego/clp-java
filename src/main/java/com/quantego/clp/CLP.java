@@ -1,13 +1,16 @@
 package com.quantego.clp;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
+import com.quantego.clp.CLPConstraint.TYPE;
+import com.quantego.clp.CLPNative.CLPSimplex;
+import com.quantego.clp.CLPNative.CLPSolve;
 import org.bridj.Pointer;
 
-import com.quantego.clp.CLPConstraint.TYPE;
-import com.quantego.clp.CLPNative.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>Java interface for the CLP linear solver. The implementation provides a light-weight wrapper that 
@@ -72,7 +75,24 @@ public class CLP {
 	public CLP () {
 		_model = init();
 	}
-	
+
+	public static CLP createFromMPS(File f) {
+		// Make BridJ Pointer to file
+		String path = f.toPath().toString()+'\0';
+		Pointer<Byte> ptr = Pointer.allocateBytes(path.getBytes().length);
+		ptr.setBytes(path.getBytes());
+
+		// Read MPS
+		CLP clp = new CLP();
+		CLPNative.clpReadMps(clp._model, ptr, 1, 0);
+
+		// Explicitly release manually allocated memory to be on the safe side
+		// This is normally freed by finalize method from BridJ
+		ptr.release();
+
+		return clp;
+	}
+
 	Pointer<CLPSimplex> init() {
 		Pointer<CLPSimplex> model = CLPNative.clpNewModel();
 		CLPNative.clpSetLogLevel(model,0);
