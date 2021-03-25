@@ -33,7 +33,7 @@ import java.util.Map;
  * @author Nils Loehndorf
  *
  */
-public class CLP {
+public class CLP implements AutoCloseable {
 	
 	static {
 		NativeLoader.load();
@@ -68,6 +68,8 @@ public class CLP {
 	ColBuffer _colBuffer = new ColBuffer();
 	RowBuffer _rowBuffer = new RowBuffer();
 	QuadraticObjective _qobj;
+
+	boolean _isClosed = false;
 	
 	/**
 	 * Create an new model instance.
@@ -807,12 +809,19 @@ public class CLP {
 	
 	@Override
 	public void finalize() {
-		CLPNative.clpDeleteModel(_model);
-		CLPNative.clpSolveDelete(_solve); 
+		close();
 	}
-	
-	
-	
+
+	@Override
+	public void close() {
+		if(!_isClosed) {
+			CLPNative.clpDeleteModel(_model);
+			CLPNative.clpSolveDelete(_solve);
+			_isClosed = true;
+		}
+	}
+
+
 	private int[] toIntArray(List<Integer> ints) {
 		int[] ar = new int[ints.size()];
 		int i=0;
