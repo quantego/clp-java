@@ -65,6 +65,7 @@ public class CLP {
 	ColBuffer _colBuffer = new ColBuffer();
 	RowBuffer _rowBuffer = new RowBuffer();
 	QuadraticObjective _qobj;
+	ALGORITHM _algorithm;
 	
 	/**
 	 * Create an new model instance.
@@ -538,10 +539,20 @@ public class CLP {
 	public STATUS solve() {
 		//take care of empty problem
 		flushBuffers();
-		if (_solve!=null)
-			CLPNative.clpInitialSolveWithOptions(_model,_solve);
-		else
-			CLPNative.clpInitialSolve(_model);
+//		if (_solve!=null)
+//			CLPNative.clpInitialSolveWithOptions(_model,_solve);
+//		else
+//			CLPNative.clpInitialSolve(_model);
+		if (_algorithm==ALGORITHM.DUAL)
+			CLPNative.clpDual(_model,0);
+		else if (_algorithm==ALGORITHM.PRIMAL)
+			CLPNative.clpPrimal(_model,0);
+			else {
+				if (_solve!=null)
+					CLPNative.clpInitialSolveWithOptions(_model,_solve);
+				else
+					CLPNative.clpInitialSolve(_model);
+			}
 		_objValue = CLPNative.clpGetObjValue(_model);
 		int status = CLPNative.clpStatus(_model);
 		if (status == 0) 
@@ -689,7 +700,7 @@ public class CLP {
 	 * @param seconds
 	 * @return builder
 	 */
-	public CLP maxSeconds(int seconds) {
+	public CLP maxSeconds(double seconds) {
 		CLPNative.clpSetMaximumSeconds(_model, seconds);
 		return this;
 	}
@@ -755,6 +766,7 @@ public class CLP {
 			CLPNative.clpSolveSetSolveType(_solve, 5, -1);
 			break;
 		}
+		_algorithm = algorithm;
 		return this;
 	}
 
