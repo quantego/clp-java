@@ -1,10 +1,12 @@
 package com.quantego.clp;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
+import java.io.File;
+import java.net.URL;
 import java.util.Random;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 
 public class CLPTest {
@@ -33,7 +35,7 @@ public class CLPTest {
 			e.eq(1./size2);
 		}
 		CLP.STATUS ret = model.minimize();
-		assertTrue(ret==CLP.STATUS.LIMIT);
+		assertSame(CLP.STATUS.LIMIT, ret);
 	}
 
 	@Test
@@ -66,8 +68,8 @@ public class CLPTest {
 		CLP clp = new CLP().maximization();
 		CLPVariable var = clp.addVariable().obj(2).quad(-1);
 		clp.solve();
-		assertTrue(clp.getObjectiveValue()==1);
-		assertTrue(var.getSolution()==1);
+		assertEquals(1., clp.getObjectiveValue(), 1e-10);
+		assertEquals(1., var.getSolution(), 1e-10);
 	}
 	
 	@Test
@@ -80,7 +82,7 @@ public class CLPTest {
 		clp.createExpression().add(6).add(-2, x2).asObjective();
 		clp.createExpression().add(x2).leq(3);
 		clp.minimize();
-		assertTrue(clp.getObjectiveValue()==0.0);
+		assertEquals(0.0, clp.getObjectiveValue(), 1e-10);
 		clp = new CLP();
 		x1 = clp.addVariable();
 		clp.createExpression().add(-4).add(2, x1).asObjective();
@@ -89,7 +91,16 @@ public class CLPTest {
 		clp.createExpression().add(-6).add(2, x2).asObjective();
 		clp.createExpression().add(x2).leq(3);
 		clp.maximize();
-		assertTrue(clp.getObjectiveValue()==0.0);
+		assertEquals(0.0,clp.getObjectiveValue(),1e-10);
 	}
 
+	@Test
+	public void testMPS() throws Exception {
+		URL problem = this.getClass().getClassLoader().getResource("10teams.mps");
+		assertNotNull(problem);
+		File mps = new File(problem.toURI());
+		CLP clp = CLP.createFromMPS(mps);
+		clp.solve();
+		assertEquals(917.,clp.getObjectiveValue(),1e-10);
+	}
 }
