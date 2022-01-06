@@ -26,7 +26,16 @@
 	<developerConnection>scm:git:git@github.com:loehndorf/clp-java.git</developerConnection>
   </scm>
   
+  <repositories>
+      <repository>
+      <id>in-project</id>
+      <name>In Project Repo</name>
+      <url>file://${project.basedir}/libs</url>
+    </repository>
+  </repositories>
+  
   <packaging>jar</packaging>
+  
   <dependencies>
    <dependency>
       <groupId>junit</groupId>
@@ -34,13 +43,13 @@
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
-  	<dependency>
-  		<groupId>com.nativelibs4java</groupId>
-  		<artifactId>bridj</artifactId>
-  		<version>0.7.0</version>
-  	</dependency>
+    <dependency>
+	  <groupId>com.nativelibs4java</groupId>
+	  <artifactId>bridj</artifactId>
+	  <version>0.7.1</version>
+	</dependency>
   </dependencies>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.7</maven.compiler.source>
