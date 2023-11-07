@@ -1,6 +1,7 @@
 package com.quantego.clp;
 
-import org.bridj.BridJ;
+import jnr.ffi.LibraryLoader;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,17 +11,24 @@ import java.io.OutputStream;
 class NativeLoader {
 
 	static String prefix = "CLPExtractedLib";
-	static String library = "clp-1.16.11";
+	static String library = "clp-1.16.13";
 	static String pathSep = System.getProperty("file.separator");
 
 	public static void main(String... args) {
-		System.err.println(load());
+		CLP clp = new CLP();
+		CLPVariable x1 = clp.addVariable();
+		clp.createExpression().add(4).add(-2, x1).asObjective();
+		clp.createExpression().add(x1).leq(2);
+		CLPVariable x2 = clp.addVariable();
+		clp.createExpression().add(6).add(-2, x2).asObjective();
+		clp.createExpression().add(x2).leq(3);
+		clp.minimize();
+		System.out.println(clp.toString());
 	}
 
-	static String load() {
+	static CLPNative load() {
 		File tempDir = createTempDir(prefix);
-		BridJ.addLibraryPath(tempDir.getAbsolutePath());
-		String osArch = System.getProperty("os.arch");
+		String osArch = System.getProperty("os.arch").toLowerCase();
 	    String osName = System.getProperty("os.name").toLowerCase();
 	    String path;
 	    String[] libs;
@@ -39,16 +47,26 @@ class NativeLoader {
 	        libs = new String[]{"libgcc_s_seh-1.dll","libstdc++-6.dll","libCoinUtils-3.dll","Clp.dll"};
 	        selectedArch = "win-x86_64";
 	    } else if (osName.startsWith("linux")) {
-	    	path = library+"/linux64/";
-	    	libs = new String[]{"libCoinUtils.so.3","libClp.so"};
-	        BridJ.addNativeLibraryDependencies("Clp", "CoinUtils");
-	        selectedArch = "linux-x86_64";
+			if (osArch.equals("aarch64")) {
+				path = library + "/linux-aarch64/";
+				libs = new String[]{"libCoinUtils.so.3", "libClp.so"};
+				//BridJ.addNativeLibraryDependencies("Clp", new String[]{"CoinUtils"});
+				selectedArch = "linux-aarch64";
+			} else {
+				path = library+"/linux-x86/";
+				libs = new String[]{"libCoinUtils.so.3","libClp.so"};
+				//BridJ.addNativeLibraryDependencies("Clp", new String[]{"CoinUtils"});
+				selectedArch = "linux-x86_64";
+			}
 	    } else {
 	        throw new UnsupportedOperationException("Platform " + osName + ":" + osArch + " not supported");
 	    }
 	    for (String lib : libs)
 			loadLibrary(tempDir,path,lib);
-	    return String.format("Loaded libraries: %s, architecture: %s, system: %s.", selectedArch, osArch, osName);
+		return LibraryLoader
+				.create(CLPNative.class)
+				.search(tempDir.getAbsolutePath())
+				.load("Clp");
 	}
 
 	public static File createTempDir(String prefix) {

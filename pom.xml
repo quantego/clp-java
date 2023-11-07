@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.quantego</groupId>
   <artifactId>clp-java</artifactId>
-  <version>1.16.11</version>
+  <version>1.16.13</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>A linear programming library based on the Coin-OR CLP linear solver.</description>
   <url>https://github.com/loehndorf/clp-java</url>
@@ -44,16 +44,16 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-	  <groupId>com.nativelibs4java</groupId>
-	  <artifactId>bridj</artifactId>
-	  <version>0.7.1</version>
-	</dependency>
+      <groupId>com.github.jnr</groupId>
+      <artifactId>jnr-ffi</artifactId>
+      <version>2.2.15</version>
+    </dependency>
   </dependencies>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
    </properties>
    
   <distributionManagement>
@@ -133,20 +133,28 @@
        <appendAssemblyId>false</appendAssemblyId>
        </configuration>
       </plugin>
-      <!-- <plugin>
-	      <groupId>org.apache.maven.plugins</groupId>
-	      <artifactId>maven-gpg-plugin</artifactId>
-	      <version>1.5</version>
-	      <executions>
-	        <execution>
-	          <id>sign-artifacts</id>
-	          <phase>verify</phase>
-	          <goals>
-	            <goal>sign</goal>
-	          </goals>
-	        </execution>
-	      </executions>
-    	</plugin> -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+                <source>8</source>
+                <target>8</target>
+            </configuration>
+        </plugin>
+        <!-- <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin> -->
 	</plugins> 
   </build>
 </project>

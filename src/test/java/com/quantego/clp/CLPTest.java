@@ -1,5 +1,7 @@
 package com.quantego.clp;
 
+import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import org.junit.Test;
 
 import java.io.File;
@@ -10,6 +12,37 @@ import static org.junit.Assert.*;
 
 
 public class CLPTest {
+
+	@Test
+	public void testPointer() {
+		double[] arr = new double[]{1,2,3};
+		Pointer p = CLP.arrayToPointer(arr);
+		assertEquals(p.getDouble(0),0.,1);
+		assertEquals(p.getDouble(1),1.,2);
+		assertEquals(p.getDouble(2),2.,3);
+		Pointer p2 = CLP.copyOfPointer(p);
+		assertEquals(p2.getDouble(0),0.,1);
+		assertEquals(p2.getDouble(1),1.,2);
+		assertEquals(p2.getDouble(2),2.,3);
+	}
+
+	@Test
+	public void testObjective() {
+		CLPNative NATIVE = NativeLoader.load();
+		Runtime RUNTIME = Runtime.getSystemRuntime();
+		Pointer model = NATIVE.Clp_newModel();
+		NATIVE.Clp_addColumns(model,
+				2,
+				CLP.arrayToPointer(new double[]{0.0,0.0}),
+				CLP.arrayToPointer(new double[]{10.0,10.0}),
+				CLP.arrayToPointer(new double[]{1.8,3.6}),
+				CLP.arrayToPointer(new double[]{0}),
+				CLP.arrayToPointer(new double[0]),
+				CLP.arrayToPointer(new double[0]));
+		Pointer p = NATIVE.Clp_getObjCoefficients(model);
+		assertEquals(p.getDouble(0),1.8,1e-10);
+		assertEquals(p.getDouble(1*Double.BYTES),3.6,1e-10);
+	}
 	
 	@Test
 	public void testBuffers() {
@@ -20,17 +53,17 @@ public class CLPTest {
 		CLPVariable[][] massTransport = new CLPVariable[size1][size2];
 		for (int i=0; i<size1; i++) {
 			double rnd = gen.nextGaussian();
-			for (int j=0; j<size2; j++) 
+			for (int j=0; j<size2; j++)
 				massTransport[i][j] = model.addVariable()
 				.ub(1./size2)
 				.obj(Math.pow(gen.nextGaussian()-rnd,2)); //L2-Wasserstein distance
-			
+
 		}
-		for (int i=0; i<size1; i++) 
+		for (int i=0; i<size1; i++)
 			model.createExpression().add(massTransport[i]).eq(1./size1);
 		for (int j=0; j<size2; j++) {
 			CLPExpression e = model.createExpression();
-			for (int i=0; i<size1; i++) 
+			for (int i=0; i<size1; i++)
 				e.add(massTransport[i][j]);
 			e.eq(1./size2);
 		}
