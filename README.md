@@ -19,9 +19,7 @@ Since there is no operator overloading in Java, algebraic formulations are not p
 ```
 model.createExpression().add(3,x).add(4,y).leq(10);
 ```
-The *add* statements also accepts vectors of variables and coefficients.
-
-See the [javadoc](http://quantego.github.io/clp-java) for further reference.
+The *add* statements also accepts vectors of variables and coefficients. See the [javadoc](http://quantego.github.io/clp-java) for further reference.
 
 #### Fast model building
 
@@ -56,5 +54,8 @@ The jar file contains the native libs for the most important host systems (Intel
 ## Documentation
 
 See the [javadoc](http://quantego.github.io/clp-java) for a full class reference.
+
+## Author
+Nils Löhndorf
 
 
