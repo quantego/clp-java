@@ -504,10 +504,9 @@ public class CLP {
 	}
 	
 	/**
-	 * Set the objective function to the model without using {@link CLP#buildExpression()}. Objective coefficients not set remain unchanged.
-	 * @param lhs terms on the left-hand side
-	 * @param type constraint type
-	 * @param rhs right-hand side coefficient
+	 * Set the objective function to the model without using {@link CLP#createExpression()}. Objective coefficients not set remain unchanged.
+	 * @param terms terms of the objective function
+	 * @param offset constant offset in the objective function
 	 * @return
 	 */ 
 	public CLPObjective addObjective(Map<CLPVariable,Double> terms, double offset) {
@@ -518,7 +517,7 @@ public class CLP {
 	}
 	
 	/**
-	 * Add a new constraint to the model without using {@link CLP#buildExpression()}.
+	 * Add a new constraint to the model without using {@link CLP#createExpression()}.
 	 * @param lhs terms on the left-hand side
 	 * @param type constraint type
 	 * @param rhs right-hand side coefficient
@@ -533,7 +532,7 @@ public class CLP {
 	}
 	
 	/**
-	 * Add a new constraint to the model without using {@link CLP#buildExpression()}.
+	 * Add a new constraint to the model without using {@link CLP#createExpression()}.
 	 * @param lhs terms on the left-hand side
 	 * @param type constraint type
 	 * @param rhs right-hand side coefficient
