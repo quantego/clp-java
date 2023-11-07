@@ -4,10 +4,6 @@ import com.quantego.clp.CLPConstraint.TYPE;
 import jnr.ffi.Memory;
 import jnr.ffi.Pointer;
 import jnr.ffi.Runtime;
-
-import java.nio.ByteBuffer;
-
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
