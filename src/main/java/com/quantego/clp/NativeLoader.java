@@ -33,28 +33,36 @@ class NativeLoader {
 	    String path;
 	    String[] libs;
 	    String selectedArch = null;
-		if (osArch.equalsIgnoreCase("aarch64")) {
-			path = library + "/aarch64/";
-			libs = new String[]{"libCoinUtils.so.3", "libClp.so"};
-			BridJ.addNativeLibraryDependencies("Clp", "CoinUtils");
-			selectedArch = "mac-aarch64";
-	    } else if (osName.startsWith("mac")) {
-	    	path = library+"/darwin/";
-	    	libs = new String[]{"libCoinUtils.3.dylib","libClp.dylib"};
-	    	selectedArch = "mac-x86_64";
+		String coinUtils = null;
+		if (osName.startsWith("mac")) {
+			if (osArch.equals("aarch64")) {
+				path = library+"/darwin-aarch64/";
+				libs = new String[]{"libCoinUtils.3.dylib","libClp.dylib"};
+				coinUtils = "CoinUtils.3";
+				selectedArch = "mac-aarch64";
+			}
+			else {
+				path = library+"/darwin-x86/";
+				libs = new String[]{"libCoinUtils.3.dylib","libClp.dylib"};
+				coinUtils = "CoinUtils.3";
+				selectedArch = "mac-x86_64";
+			}
 	    } else if (osName.startsWith("win") && osArch.contains("64")) {
 	    	path = library+"/win64/";
 	        libs = new String[]{"libgcc_s_seh-1.dll","libstdc++-6.dll","libCoinUtils-3.dll","Clp.dll"};
+			coinUtils = "libCoinUtils-3.dll";
 	        selectedArch = "win-x86_64";
 	    } else if (osName.startsWith("linux")) {
 			if (osArch.equals("aarch64")) {
 				path = library + "/linux-aarch64/";
 				libs = new String[]{"libCoinUtils.so.3", "libClp.so"};
+				coinUtils = "CoinUtils";
 				//BridJ.addNativeLibraryDependencies("Clp", new String[]{"CoinUtils"});
 				selectedArch = "linux-aarch64";
 			} else {
 				path = library+"/linux-x86/";
 				libs = new String[]{"libCoinUtils.so.3","libClp.so"};
+				coinUtils = "CoinUtils";
 				//BridJ.addNativeLibraryDependencies("Clp", new String[]{"CoinUtils"});
 				selectedArch = "linux-x86_64";
 			}
@@ -66,6 +74,7 @@ class NativeLoader {
 		return LibraryLoader
 				.create(CLPNative.class)
 				.search(tempDir.getAbsolutePath())
+				.library(coinUtils)
 				.load("Clp");
 	}
 

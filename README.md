@@ -29,7 +29,7 @@ Chunks of a model are buffered in heap for model building before being sent to t
 
 #### Direct memory access
 
-Once a model is build it only lives in native memory, with the exception of referenced objects of variables and constraints which remein in heap. To update model coefficients, the model is accessed directly in native memory via direct byte buffers that are provided by the [https://github.com/nativelibs4java/BridJ](BridJ) native interface. When the model gets gc'ed, native memory will be released automatically.
+Once a model is build it only lives in native memory, with the exception of referenced objects of variables and constraints which remain in heap. To update model coefficients, the model is accessed directly in native memory via direct byte buffers which speeds up resolves. When the model gets gc'ed, native memory will be released automatically.
 
 ## Installation
 
@@ -39,18 +39,18 @@ The project is available at the central repository. Simply add the following dep
 <dependency>
   <groupId>com.quantego</groupId>
   <artifactId>clp-java</artifactId>
-  <version>1.16.10</version>
+  <version>1.16.13</version>
 </dependency>
 ```
 
 #### All-in-one jar file
 Download the [latest build](https://github.com/quantego/clp-java/releases/latest) of the jar from the release page.
 
-The jar file contains the native libs for the most important host systems (Mac, Win 64, Linux 64), so there won't be `UnsatisfiedLinkError`messages and there is no messing around with setting build paths. A copy of the native libs will be created in a temporary directory at runtime. Simply import the jar and you're done.
+The jar file contains the native libs for the most important host systems (Intel Mac, Apple Silcon, Win 64, Linux ARM and x86), so there won't be `UnsatisfiedLinkError`messages and there is no messing around with setting build paths. A copy of the native libs will be created in a temporary directory at runtime. Simply import the jar and you're done.
 
 ## Requirements
 
-* Java JDK 7
+* Java JDK 8
 * 64-bit Linux, Mac OS, or Windows
 
 ## Documentation

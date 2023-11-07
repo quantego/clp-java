@@ -26,8 +26,7 @@ import java.util.Map;
  * Models with millions of constraints can be generated quickly.</p>
  * 
  * <p>To update model coefficients, the model is accessed 
- * directly in native memory via direct byte buffers that are provided by the 
- * <a href="https://github.com/nativelibs4java/BridJ">BridJ</a> native interface. 
+ * directly in native memory via direct byte buffers which enables fast resolves.
  * When the model gets gc'ed, native memory will be released automatically.</p>
  * 
  * <p> For debugging a model, use {@link CLP#verbose(int)} to set the internal log level of CLP which will show some solution information
