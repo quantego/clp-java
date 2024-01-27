@@ -600,12 +600,12 @@ public class CLP {
 		_elements.get(0,d,0,_numElements);
 		NATIVE.Clp_addColumns(newModel,
 				_numCols,
-				copyOfPointer(_colLower),
-				copyOfPointer(_colUpper),
-				copyOfPointer(_obj),
+				copyOfDoublePointer(_colLower,_numCols),
+				copyOfDoublePointer(_colUpper,_numCols),
+				copyOfDoublePointer(_obj,_numCols),
 				arrayToPointer(getStarts()),
 				arrayToPointer(getIndex()),
-				copyOfPointer(_elements));
+				copyOfDoublePointer(_elements,_numElements));
 		Pointer rowLower = _rowLower;
 		_rowLower = NATIVE.Clp_getRowLower(newModel);
 		for (int i=0; i<_numRows; i++)
@@ -1141,9 +1141,9 @@ public class CLP {
 		return pointer;
 	}
 
-	public static Pointer copyOfPointer(Pointer pointer) {
-		Pointer pointer2 = Memory.allocateDirect(RUNTIME,pointer.size());
-		pointer2.transferTo(0,pointer,0,pointer.size());
+	public static Pointer copyOfDoublePointer(Pointer pointer, int length) {
+		Pointer pointer2 = Memory.allocateDirect(RUNTIME,length * Double.BYTES);
+		pointer.transferTo(0,pointer2,0,length* Double.BYTES);
 		return pointer2;
 	}
 

@@ -20,7 +20,7 @@ public class CLPTest {
 		assertEquals(p.getDouble(0),0.,1);
 		assertEquals(p.getDouble(1),1.,2);
 		assertEquals(p.getDouble(2),2.,3);
-		Pointer p2 = CLP.copyOfPointer(p);
+		Pointer p2 = CLP.copyOfDoublePointer(p,3);
 		assertEquals(p2.getDouble(0),0.,1);
 		assertEquals(p2.getDouble(1),1.,2);
 		assertEquals(p2.getDouble(2),2.,3);
@@ -135,5 +135,21 @@ public class CLPTest {
 		CLP clp = CLP.createFromMPS(mps);
 		clp.solve();
 		assertEquals(917.,clp.getObjectiveValue(),1e-10);
+	}
+
+	@Test
+	public void testReset() {
+		CLP clp = new CLP();
+		CLPVariable x1 = clp.addVariable();
+		clp.createExpression().add(4).add(-2, x1).asObjective();
+		clp.createExpression().add(x1).leq(2);
+		CLPVariable x2 = clp.addVariable();
+		clp.createExpression().add(6).add(-2, x2).asObjective();
+		clp.createExpression().add(x2).leq(3);
+		clp.minimize();
+		System.out.println(clp.toString());
+		clp.reset();
+		clp.minimize();
+		System.out.println(clp.toString());
 	}
 }

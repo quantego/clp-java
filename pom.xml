@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.quantego</groupId>
   <artifactId>clp-java</artifactId>
-  <version>1.16.13</version>
+  <version>1.16.14</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>A linear programming library based on the Coin-OR CLP linear solver.</description>
   <url>https://github.com/loehndorf/clp-java</url>
@@ -17,7 +17,6 @@
       <name>Nils Loehndorf</name>
       <email>nils@loehndorf.com</email>
       <organization>Quantego</organization>
-      <organizationUrl>http://www.quantego.com</organizationUrl>
     </developer>
   </developers>
   <scm>
@@ -73,7 +72,7 @@
 	   <plugin>
          <groupId>org.sonatype.plugins</groupId>
          <artifactId>nexus-staging-maven-plugin</artifactId>
-         <version>1.6.3</version>
+         <version>1.6.13</version>
          <extensions>true</extensions>
          <configuration>
            <serverId>ossrh</serverId>
@@ -141,7 +140,7 @@
                 <target>8</target>
             </configuration>
         </plugin>
-        <!-- <plugin>
+        <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <version>1.5</version>
@@ -154,7 +153,7 @@
                 </goals>
               </execution>
             </executions>
-          </plugin> -->
+          </plugin>
 	</plugins> 
   </build>
 </project>
