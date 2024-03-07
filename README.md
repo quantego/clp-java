@@ -37,7 +37,7 @@ The project is available at the central repository. Simply add the following dep
 <dependency>
   <groupId>com.quantego</groupId>
   <artifactId>clp-java</artifactId>
-  <version>1.16.13</version>
+  <version>1.16.15</version>
 </dependency>
 ```
 
