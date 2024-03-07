@@ -11,7 +11,7 @@ import java.io.OutputStream;
 class NativeLoader {
 
 	static String prefix = "CLPExtractedLib";
-	static String library = "clp-1.16.13";
+	static String library = "clp-1.16.15";
 	static String pathSep = System.getProperty("file.separator");
 
 	public static void main(String... args) {
